@@ -7,6 +7,8 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <time.h>
+
 
 #define MAXDATASIZE 100 /* max number of bytes we can get at once */
 
@@ -47,7 +49,8 @@ int main(int argc, char *argv[])
     if (connect(sockfd, (struct sockaddr *)&their_addr,
                 sizeof(struct sockaddr)) == -1)
     {
-        perror("connect");
+        //perror("connect");
+        fprintf(stderr, "Could not connect with port %d\n", port);
         exit(1);
     }
 
