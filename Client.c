@@ -14,15 +14,17 @@
 
 int main(int argc, char *argv[])
 {
-    int sockfd, numbytes;
+    int sockfd, new_fd, numbytes;
     char buf[MAXDATASIZE];
     struct hostent *he;
     struct sockaddr_in their_addr; /* connector's address information */
+    struct sockaddr_in connect_addr; /* connector's address information */
+    socklen_t sin_size;
 
     if (argc != 3)
     {
-        fprintf(stderr, "usage: <hostname> <port number>\n");
-        exit(1);
+        //fprintf(stderr, "usage: <hostname> <port number>\n");
+        //exit(1);
     }
     
     int port = atoi(argv[2]);
@@ -33,6 +35,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
+	/* generate the socket */
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
     {
         perror("socket");
@@ -59,12 +62,54 @@ int main(int argc, char *argv[])
         perror("recv");
         exit(1);
     }
-
+    printf("%d\n",numbytes);
+    
     buf[numbytes] = '\0';
 
-    printf("Received: %s", buf);
+    printf("Received: %s\n", buf);
+    
+    /*crate a new fork */    
+    pid_t pid;
+    pid = fork();
+    int value = 0;
+    if(pid < 0){
+		perror("Failed");
+	}
+	if(pid == 0){
+		
+        /* this is the child process */
+        value = execlp(argv[3], "from test", NULL);
+        if(value == -1){
+			perror("execlp failed");
+		}
+		
 
-    close(sockfd);
+		
+		//close(value);
+		//close(sockfd);
+		//exit(1);	
+	}
+	
+		sin_size = sizeof(struct sockaddr_in);
+        if ((new_fd = accept(sockfd, (struct sockaddr *)&connect_addr,
+                             &sin_size)) == -1)
+        {
+            //perror("accept");
+            //continue;
+        }
+        if(!fork()){
+        
+			if (send(sockfd, argv[3] , sizeof(argv[3]), 0) == -1){
+				perror("send");
+				close(new_fd);
+				exit(0);
+			}
+		}
+
+
+    
+
+    close(new_fd);
 
     return 0;
 }

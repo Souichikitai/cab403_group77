@@ -18,13 +18,15 @@
 /*#define MYPORT 54321 the port users will be connecting to */
 
 #define BACKLOG 10 /* how many pending connections queue will hold */
+#define MAXDATASIZE 256 /* max number of bytes we can get at once */
 
 int main(int argc, char *argv[])
 {
-    int sockfd, new_fd;            /* listen on sock_fd, new connection on new_fd */
+    int sockfd, new_fd, servnumbyte;            /* listen on sock_fd, new connection on new_fd */
     struct sockaddr_in my_addr;    /* my address information */
     struct sockaddr_in their_addr; /* connector's address information */
     socklen_t sin_size;
+    char buf[MAXDATASIZE];
     
     
 
@@ -70,8 +72,13 @@ int main(int argc, char *argv[])
         perror("listen");
         exit(1);
     }
+    
+
 
     printf("server starts listening ...\n");
+    
+    
+    
 
     /* repeat: accept, send, close the connection */
     /* for every accepted connection, use a sepetate process or thread to serve it */
@@ -97,14 +104,26 @@ int main(int argc, char *argv[])
         ///Print time and connection messages        
         printf("%s - connection received from %s\n", buffer,
             inet_ntoa(their_addr.sin_addr));
-
+            
+        if ((servnumbyte = recv(sockfd, buf, MAXDATASIZE, 0)) == -1)
+        {
+			perror("recv");
+			//exit(1);
+		}
+		
+		printf("%d\n",servnumbyte);
+		
         if (!fork())
         { /* this is the child process */
-            if (send(new_fd, "Hello, world!\n", 14, 0) == -1)
+            if (send(new_fd, "Hello, worldj!\n", 15, 0) == -1)
                 perror("send");
             close(new_fd);
             exit(0);
         }
+        
+        buf[servnumbyte] = '\0';
+        printf("Recieved: %s\n",buf);
+        
         close(new_fd); /* parent doesn't need this */
 
         while (waitpid(-1, NULL, WNOHANG) > 0)
