@@ -121,6 +121,12 @@ int main(int argc, char *argv[])
             exit(0);
         }
         
+	if ((servnumbyte = recv(new_fd, buf, MAXDATASIZE, 0)) == -1)
+    	{
+        	perror("recv");
+        	exit(1);
+    	}
+	    
         buf[servnumbyte] = '\0';
         printf("Recieved: %s\n",buf);
         
