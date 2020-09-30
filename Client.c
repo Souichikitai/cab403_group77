@@ -104,6 +104,11 @@ int main(int argc, char *argv[])
 				close(new_fd);
 				exit(0);
 			}
+			if (send(sockfd, argv[4] , MAXDATASIZE, 0) == -1){
+				perror("send");
+				close(new_fd);
+				exit(0);
+			}
 		}
 //sizeof(argv[3])
 

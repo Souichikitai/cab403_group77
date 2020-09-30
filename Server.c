@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
     struct sockaddr_in their_addr; /* connector's address information */
     socklen_t sin_size;
     char buf[MAXDATASIZE];
-    
+    char buf2[MAXDATASIZE];
     
 
     
@@ -130,6 +130,15 @@ int main(int argc, char *argv[])
         buf[servnumbyte] = '\0';
         printf("Recieved: %s\n",buf);
         
+        if ((servnumbyte = recv(new_fd, buf2, MAXDATASIZE, 0)) == -1)
+    	{
+        	perror("recv");
+        	//exit(1);       	
+    	}
+	    
+        buf2[servnumbyte] = '\0';
+        printf("Recieved: %s\n",buf2);
+        
         /*crate a new fork */    
     pid_t pid;
     pid = fork();
@@ -140,7 +149,7 @@ int main(int argc, char *argv[])
 	if(pid == 0){
 		
         /* this is the child process */
-        value = execlp(buf, "from test", NULL);
+        value = execlp(buf, buf2, NULL);
         if(value == -1){
 			perror("execlp failed");
 		}
