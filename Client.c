@@ -99,13 +99,13 @@ int main(int argc, char *argv[])
         }
         if(!fork()){
         
-			if (send(sockfd, argv[3] , sizeof(argv[3]), 0) == -1){
+			if (send(sockfd, argv[3] , MAXDATASIZE, 0) == -1){
 				perror("send");
 				close(new_fd);
 				exit(0);
 			}
 		}
-
+//sizeof(argv[3])
 
     
 

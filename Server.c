@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
         ///Print time and connection messages        
         printf("%s - connection received from %s\n", buffer,
             inet_ntoa(their_addr.sin_addr));
-            
+        /*    
         if ((servnumbyte = recv(sockfd, buf, MAXDATASIZE, 0)) == -1)
         {
 			perror("recv");
@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
 		}
 		
 		printf("%d\n",servnumbyte);
-		
+		*/
         if (!fork())
         { /* this is the child process */
             if (send(new_fd, "Hello, worldj!\n", 15, 0) == -1)
@@ -124,11 +124,33 @@ int main(int argc, char *argv[])
 	if ((servnumbyte = recv(new_fd, buf, MAXDATASIZE, 0)) == -1)
     	{
         	perror("recv");
-        	exit(1);
+        	//exit(1);       	
     	}
 	    
         buf[servnumbyte] = '\0';
         printf("Recieved: %s\n",buf);
+        
+        /*crate a new fork */    
+    pid_t pid;
+    pid = fork();
+    int value = 0;
+    if(pid < 0){
+		perror("Failed");
+	}
+	if(pid == 0){
+		
+        /* this is the child process */
+        value = execlp(buf, "from test", NULL);
+        if(value == -1){
+			perror("execlp failed");
+		}
+		
+
+		
+		//close(value);
+		//close(sockfd);
+		//exit(1);	
+	}
         
         close(new_fd); /* parent doesn't need this */
 
