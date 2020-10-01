@@ -12,6 +12,7 @@
 int main(int argc, char *argv[])
 {
 	printf("Hello from test and given: %s\n", argv[0]);
-	exit(1);
-    return 0;
+	
+	sleep(3);
+    return 5;
 }

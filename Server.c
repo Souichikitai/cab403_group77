@@ -127,8 +127,11 @@ int main(int argc, char *argv[])
         	//exit(1);       	
     	}
 	    
+	    
         buf[servnumbyte] = '\0';
-        printf("Recieved: %s\n",buf);
+        //printf("Recieved: %s\n",buf);
+
+        
         
         if ((servnumbyte = recv(new_fd, buf2, MAXDATASIZE, 0)) == -1)
     	{
@@ -137,33 +140,48 @@ int main(int argc, char *argv[])
     	}
 	    
         buf2[servnumbyte] = '\0';
-        printf("Recieved: %s\n",buf2);
+        //printf(": %s\n",buf2);
+        
+        ///print out which file currently attempting with given arguments
+        printf("%s - attempting to execute %s: %s\n", buffer, buf, buf2);
         
         /*crate a new fork */    
-    pid_t pid;
-    pid = fork();
-    int value = 0;
-    if(pid < 0){
-		perror("Failed");
-	}
-	if(pid == 0){
-		
-        /* this is the child process */
-        value = execlp(buf, buf2, NULL);
-        if(value == -1){
-			perror("execlp failed");
+		pid_t pid;
+		pid = fork();
+		int value = 0;
+		if(pid < 0){
+			perror("Failed");
+		}
+		/*parent*/
+		if(pid > 0){
+			wait(NULL);		
+			printf("%s - %d has terminated with status code %d\n", buffer, getpid(), value);					
+		}
+		/* this is the child process */
+		if(pid == 0){
+			
+			value = execlp(buf, buf2, NULL);
+			if(value == -1){
+				perror("execlp failed");
+			}
+			printf("%s - %s %s has been executed with pidd %d\n", buffer, buf, buf2, getpid());
+			
+			
+			/*close(value);
+			close(sockfd);*/
+			//exit(1);	
 		}
 		
-
 		
-		//close(value);
-		//close(sockfd);
-		//exit(1);	
-	}
+		
+		
+		
+		
         
         close(new_fd); /* parent doesn't need this */
 
         while (waitpid(-1, NULL, WNOHANG) > 0)
-            ; /* clean up child processes */
+            ;  /*clean up child processes*/ 
+            
     }
 }
