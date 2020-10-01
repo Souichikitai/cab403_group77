@@ -145,39 +145,55 @@ int main(int argc, char *argv[])
         ///print out which file currently attempting with given arguments
         printf("%s - attempting to execute %s: %s\n", buffer, buf, buf2);
         
-        /*crate a new fork */    
+        /*crate a new fork */
+          
 		pid_t pid;
 		pid = fork();
 		int value = 0;
 		if(pid < 0){
 			perror("Failed");
 		}
-		/*parent*/
-		if(pid > 0){
-			wait(NULL);		
-			printf("%s - %d has terminated with status code %d\n", buffer, getpid(), value);					
-		}
 		/* this is the child process */
 		if(pid == 0){
 			
-			value = execlp(buf, buf2, NULL);
+			value = execlp(buf, buf2, NULL);	
+					
 			if(value == -1){
-				perror("execlp failed");
+				//perror("execlp failed");
+				printf("%s - could not execute %s %s\n", buffer, buf, buf2);
+				
+				continue;
 			}
-			printf("%s - %s %s has been executed with pidd %d\n", buffer, buf, buf2, getpid());
+			
+			
 			
 			
 			/*close(value);
 			close(sockfd);*/
 			//exit(1);	
 		}
+		/*parent*/
+		if(pid > 0){						
+			
+						
+			int status;
+			
+			
+		    
+			if(waitpid(pid, &status, 0)==-1){
+				perror("waitpid failed");
+			}
+			printf("%s - %s %s has been executed with pidd %d\n", buffer, buf, buf2, pid);
+			sleep(5);
+			if(WIFEXITED(status)){
+				const int es = WEXITSTATUS(status);
+				printf("%s - %d has terminated with status code %d\n", buffer, pid, es);	
+			}
+			//wait(NULL);		
+							
+		}
+
 		
-		
-		
-		
-		
-		
-        
         close(new_fd); /* parent doesn't need this */
 
         while (waitpid(-1, NULL, WNOHANG) > 0)
