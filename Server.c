@@ -14,6 +14,8 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <time.h>
+#include <fcntl.h>
+
 
 /*#define MYPORT 54321 the port users will be connecting to */
 
@@ -156,6 +158,8 @@ int main(int argc, char *argv[])
 		/* this is the child process */
 		if(pid == 0){
 			
+			int file = open("out_file", O_CREAT);
+			
 			value = execlp(buf, buf2, NULL);	
 					
 			if(value == -1){
@@ -164,9 +168,6 @@ int main(int argc, char *argv[])
 				
 				continue;
 			}
-			
-			
-			
 			
 			/*close(value);
 			close(sockfd);*/

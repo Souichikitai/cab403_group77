@@ -12,6 +12,11 @@
 
 #define MAXDATASIZE 100 /* max number of bytes we can get at once */
 
+static void show_error(){
+		fprintf(stderr, "usage: controller <address> <port> {[- out_file] [-log log_file] [-t seconds] <file> [arg...] | mem [pid] | memkill <percent>}\n");
+		exit(1);
+}
+
 int main(int argc, char *argv[])
 {
     int sockfd, new_fd, numbytes;
@@ -27,11 +32,15 @@ int main(int argc, char *argv[])
         //exit(1);
     }
     
+	if (strcmp(argv[1], "--help") == 0){
+		show_error();
+	}
+	
     int port = atoi(argv[2]);
 
     if ((he = gethostbyname(argv[1])) == NULL)
     { /* get the host info */
-        herror("gethostbyname");
+        show_error();
         exit(1);
     }
 
