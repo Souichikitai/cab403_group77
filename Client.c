@@ -107,16 +107,24 @@ int main(int argc, char *argv[])
             //continue;
         }
         if(!fork()){
-        
-			if (send(sockfd, argv[3] , MAXDATASIZE, 0) == -1){
+			for(int i = 3; i<= argc; ++i){
+				if (send(sockfd, argv[i] , MAXDATASIZE, 0) == -1){
 				perror("send");
 				close(new_fd);
 				exit(0);
-			}
-			if (send(sockfd, argv[4] , MAXDATASIZE, 0) == -1){
+				}
+				/*
+				if (send(sockfd, argv[3] , MAXDATASIZE, 0) == -1){
 				perror("send");
 				close(new_fd);
 				exit(0);
+				}
+				if (send(sockfd, argv[4] , MAXDATASIZE, 0) == -1){
+					perror("send");
+					close(new_fd);
+					exit(0);
+					
+				}*/
 			}
 		}
 //sizeof(argv[3])

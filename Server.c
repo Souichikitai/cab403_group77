@@ -147,6 +147,8 @@ int main(int argc, char *argv[])
         ///print out which file currently attempting with given arguments
         printf("%s - attempting to execute %s: %s\n", buffer, buf, buf2);
         
+
+        
         /*crate a new fork */
           
 		pid_t pid;
@@ -157,14 +159,16 @@ int main(int argc, char *argv[])
 		}
 		/* this is the child process */
 		if(pid == 0){
+
 			
-			int file = open("out_file", O_CREAT);
 			
-			value = execlp(buf, buf2, NULL);	
-					
+			value = execlp(buf, buf2, NULL);
+			
+			
 			if(value == -1){
 				//perror("execlp failed");
 				printf("%s - could not execute %s %s\n", buffer, buf, buf2);
+
 				
 				continue;
 			}
@@ -184,15 +188,26 @@ int main(int argc, char *argv[])
 			if(waitpid(pid, &status, 0)==-1){
 				perror("waitpid failed");
 			}
-			printf("%s - %s %s has been executed with pidd %d\n", buffer, buf, buf2, pid);
+			printf("%s - %s %s has been executed with pid %d\n", buffer, buf, buf2, pid);
 			sleep(5);
 			if(WIFEXITED(status)){
 				const int es = WEXITSTATUS(status);
 				printf("%s - %d has terminated with status code %d\n", buffer, pid, es);	
 			}
 			//wait(NULL);		
-							
+			int file = open("log_file", O_WRONLY | O_CREAT | O_APPEND, 0777);
+			
+			if(file == -1){
+				perror("Failed");
+				return 2;
+			}		
+			//fprintf(stdout,"has been executed: %d\n", file);
+					
+			dup2(file, 1);
+			printf("%s - %s %s has been executed with pid %d\n", buffer, buf, buf2, pid);	
+			close(file);	
 		}
+		
 
 		
         close(new_fd); /* parent doesn't need this */

@@ -1,0 +1,33 @@
+Hello from test and given: hello1
+Hello from test and given: hello
+2020-10-03 16:10:59 - /home/cab403/cab403_group77/test hello has been executed with pid 8550
+2020-10-03 16:10:59 - 8550 has terminated with status code 5
+Hello from test and given: hello
+2020-10-03 16:12:51 - /home/cab403/cab403_group77/test hello has been executed with pid 8611
+2020-10-03 16:12:51 - 8611 has terminated with status code 5
+Hello from test and given: hello
+2020-10-03 16:14:37 - /home/cab403/cab403_group77/test hello has been executed with pid 8677
+2020-10-03 16:14:37 - 8677 has terminated with status code 5
+Hello from test and given: hello
+2020-10-03 16:17:23 - /home/cab403/cab403_group77/test hello has been executed with pid 8803
+2020-10-03 16:17:23 - 8803 has terminated with status code 5
+Hello from test and given: hello
+2020-10-03 16:19:00 - /home/cab403/cab403_group77/test hello has been executed with pid 8861
+2020-10-03 16:19:00 - 8861 has terminated with status code 5
+2020-10-03 16:27:45 - /home/cab403/cab403_group77/test hello has been executed with pid 9266
+2020-10-03 16:27:57 - connection received from 127.0.0.1
+2020-10-03 16:27:57 - attempting to execute /home/cab403/cab403_group77/test: hello
+Hello from test and given: hello
+2020-10-03 16:27:57 - /home/cab403/cab403_group77/test hello has been executed with pid 10088
+2020-10-03 16:27:57 - 10088 has terminated with status code 5
+2020-10-03 16:27:57 - /home/cab403/cab403_group77/test hello has been executed with pid 10088
+2020-10-03 16:49:58 - /home/cab403/cab403_group77/test hello has been executed with pid 10186
+2020-10-03 16:52:52 - /home/cab403/cab403_group77/test hello has been executed with pid 10270
+2020-10-03 17:13:55 - /home/cab403/cab403_group77/test hello has been executed with pid 11048
+2020-10-03 17:14:34 - /home/cab403/cab403_group77/test hello has been executed with pid 11070
+2020-10-03 17:14:47 - connection received from 127.0.0.1
+2020-10-03 17:14:47 - attempting to execute /home/cab403/cab403_group77/test: hello
+Hello from test and given: hello
+2020-10-03 17:14:47 - /home/cab403/cab403_group77/test hello has been executed with pid 11178
+2020-10-03 17:14:47 - 11178 has terminated with status code 5
+2020-10-03 17:14:47 - /home/cab403/cab403_group77/test hello has been executed with pid 11178
