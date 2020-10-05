@@ -12,6 +12,11 @@
 
 #define MAXDATASIZE 100 /* max number of bytes we can get at once */
 
+static void show_error(){
+		fprintf(stderr, "usage: controller <address> <port> {[- out_file] [-log log_file] [-t seconds] <file> [arg...] | mem [pid] | memkill <percent>}\n");
+		exit(1);
+}
+
 int main(int argc, char *argv[])
 {
     int sockfd, new_fd, numbytes;
@@ -27,12 +32,16 @@ int main(int argc, char *argv[])
         //exit(1);
     }
     
+	if (strcmp(argv[1], "--help") == 0){
+		show_error();
+	}
+	
     int port = atoi(argv[2]);
     #hello
 
     if ((he = gethostbyname(argv[1])) == NULL)
     { /* get the host info */
-        herror("gethostbyname");
+        show_error();
         exit(1);
     }
 
@@ -99,14 +108,27 @@ int main(int argc, char *argv[])
             //continue;
         }
         if(!fork()){
-        
-			if (send(sockfd, argv[3] , sizeof(argv[3]), 0) == -1){
+			for(int i = 3; i<= argc; ++i){
+				if (send(sockfd, argv[i] , MAXDATASIZE, 0) == -1){
 				perror("send");
 				close(new_fd);
 				exit(0);
+				}
+				/*
+				if (send(sockfd, argv[3] , MAXDATASIZE, 0) == -1){
+				perror("send");
+				close(new_fd);
+				exit(0);
+				}
+				if (send(sockfd, argv[4] , MAXDATASIZE, 0) == -1){
+					perror("send");
+					close(new_fd);
+					exit(0);
+					
+				}*/
 			}
 		}
-
+//sizeof(argv[3])
 
     
 

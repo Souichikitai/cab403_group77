@@ -14,6 +14,8 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <time.h>
+#include <fcntl.h>
+
 
 /*#define MYPORT 54321 the port users will be connecting to */
 
@@ -27,7 +29,7 @@ int main(int argc, char *argv[])
     struct sockaddr_in their_addr; /* connector's address information */
     socklen_t sin_size;
     char buf[MAXDATASIZE];
-    
+    char buf2[MAXDATASIZE];
     
 
     
@@ -104,7 +106,7 @@ int main(int argc, char *argv[])
         ///Print time and connection messages        
         printf("%s - connection received from %s\n", buffer,
             inet_ntoa(their_addr.sin_addr));
-            
+        /*    
         if ((servnumbyte = recv(sockfd, buf, MAXDATASIZE, 0)) == -1)
         {
 			perror("recv");
@@ -112,7 +114,7 @@ int main(int argc, char *argv[])
 		}
 		
 		printf("%d\n",servnumbyte);
-		
+		*/
         if (!fork())
         { /* this is the child process */
             if (send(new_fd, "Hello, worldj!\n", 15, 0) == -1)
@@ -121,12 +123,97 @@ int main(int argc, char *argv[])
             exit(0);
         }
         
+	if ((servnumbyte = recv(new_fd, buf, MAXDATASIZE, 0)) == -1)
+    	{
+        	perror("recv");
+        	//exit(1);       	
+    	}
+	    
+	    
         buf[servnumbyte] = '\0';
-        printf("Recieved: %s\n",buf);
+        //printf("Recieved: %s\n",buf);
+
         
+        
+        if ((servnumbyte = recv(new_fd, buf2, MAXDATASIZE, 0)) == -1)
+    	{
+        	perror("recv");
+        	//exit(1);       	
+    	}
+	    
+        buf2[servnumbyte] = '\0';
+        //printf(": %s\n",buf2);
+        
+        ///print out which file currently attempting with given arguments
+        printf("%s - attempting to execute %s: %s\n", buffer, buf, buf2);
+        
+
+        
+        /*crate a new fork */
+          
+		pid_t pid;
+		pid = fork();
+		int value = 0;
+		if(pid < 0){
+			perror("Failed");
+		}
+		/* this is the child process */
+		if(pid == 0){
+
+			
+			
+			value = execlp(buf, buf2, NULL);
+			
+			
+			if(value == -1){
+				//perror("execlp failed");
+				printf("%s - could not execute %s %s\n", buffer, buf, buf2);
+
+				
+				continue;
+			}
+			
+			/*close(value);
+			close(sockfd);*/
+			//exit(1);	
+		}
+		/*parent*/
+		if(pid > 0){						
+			
+						
+			int status;
+			
+			
+		    
+			if(waitpid(pid, &status, 0)==-1){
+				perror("waitpid failed");
+			}
+			printf("%s - %s %s has been executed with pid %d\n", buffer, buf, buf2, pid);
+			sleep(5);
+			if(WIFEXITED(status)){
+				const int es = WEXITSTATUS(status);
+				printf("%s - %d has terminated with status code %d\n", buffer, pid, es);	
+			}
+			//wait(NULL);		
+			int file = open("log_file", O_WRONLY | O_CREAT | O_APPEND, 0777);
+			
+			if(file == -1){
+				perror("Failed");
+				return 2;
+			}		
+			//fprintf(stdout,"has been executed: %d\n", file);
+					
+			dup2(file, 1);
+			printf("%s - %s %s has been executed with pid %d\n", buffer, buf, buf2, pid);	
+			close(file);	
+		}
+		
+
+		
         close(new_fd); /* parent doesn't need this */
 
         while (waitpid(-1, NULL, WNOHANG) > 0)
-            ; /* clean up child processes */
+            ;  /*clean up child processes*/ 
+            
     }
 }
