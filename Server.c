@@ -90,6 +90,9 @@ int main(int argc, char *argv[])
 		time_t timer;
 		char buffer[26];
 		struct tm* tm_info;
+		
+		//new
+		char receive_buffer[256];
     
 		timer = time(NULL);
 		tm_info = localtime(&timer);
@@ -123,34 +126,57 @@ int main(int argc, char *argv[])
             exit(0);
         }
         
-	if ((servnumbyte = recv(new_fd, buf, MAXDATASIZE, 0)) == -1)
+		if ((servnumbyte = recv(new_fd, buf, MAXDATASIZE, 0)) == -1)
     	{
         	perror("recv");
         	//exit(1);       	
     	}
-	    
-	    
+	    	    
         buf[servnumbyte] = '\0';
         //printf("Recieved: %s\n",buf);
 
-        
-        
-        if ((servnumbyte = recv(new_fd, buf2, MAXDATASIZE, 0)) == -1)
+        /*if ((servnumbyte = recv(new_fd, buf2, MAXDATASIZE, 0)) == -1)
     	{
         	perror("recv");
         	//exit(1);       	
     	}
 	    
         buf2[servnumbyte] = '\0';
-        //printf(": %s\n",buf2);
+        //printf(": %s\n",buf2);*/
         
-        ///print out which file currently attempting with given arguments
-        printf("%s - attempting to execute %s: %s\n", buffer, buf, buf2);
         
+        int argument_size = atoi(buf);
+        
+        //recieve all buffer new
+		for (int i = 0; i < argument_size; i++) {
+			
+			int received_bytes = 0;
+			int remaining_bytes = sizeof(receive_buffer);
 
+			while (remaining_bytes > 0) {
+				int res = recv(new_fd , &receive_buffer[received_bytes] , remaining_bytes, 0);
+				if (res < 0) {
+					puts("recv failed");
+					break;
+				}
+				
+				received_bytes += res;
+				remaining_bytes -= res;
+				receive_buffer[res] = '\0';
+			}
+			
+			puts(receive_buffer);
+		}
+		
+        /*///print out which file currently attempting with given arguments
+        printf("%s - attempting to execute %s: %s\n", buffer, buf, buf2);
+        */
+        
+        printf("%s - attempting to execute %d: %d\n", buffer, receive_buffer[argument_size-2], receive_buffer[argument_size-1]);
+        printf("%s", buf);
+        
         
         /*crate a new fork */
-          
 		pid_t pid;
 		pid = fork();
 		int value = 0;
@@ -160,16 +186,12 @@ int main(int argc, char *argv[])
 		/* this is the child process */
 		if(pid == 0){
 
-			
-			
 			value = execlp(buf, buf2, NULL);
-			
 			
 			if(value == -1){
 				//perror("execlp failed");
 				printf("%s - could not execute %s %s\n", buffer, buf, buf2);
 
-				
 				continue;
 			}
 			
@@ -179,11 +201,8 @@ int main(int argc, char *argv[])
 		}
 		/*parent*/
 		if(pid > 0){						
-			
-						
+
 			int status;
-			
-			
 		    
 			if(waitpid(pid, &status, 0)==-1){
 				perror("waitpid failed");
@@ -195,25 +214,27 @@ int main(int argc, char *argv[])
 				printf("%s - %d has terminated with status code %d\n", buffer, pid, es);	
 			}
 			//wait(NULL);		
-			int file = open("log_file", O_WRONLY | O_CREAT | O_APPEND, 0777);
 			
-			if(file == -1){
-				perror("Failed");
-				return 2;
-			}		
-			//fprintf(stdout,"has been executed: %d\n", file);
-					
-			dup2(file, 1);
-			printf("%s - %s %s has been executed with pid %d\n", buffer, buf, buf2, pid);	
-			close(file);	
+			//when user spcified the -log option, wright in log file
+			if(strcmp(buf, "-log") == 0){
+				int file = open("log_file", O_WRONLY | O_CREAT | O_APPEND, 0777);
+				
+				if(file == -1){
+					perror("Failed");
+					return 2;
+				}						
+				dup2(file, 1);
+				//fprintf(stdout,"has been executed: %d\n", file);
+				printf("%s - %s %s has been executed with pid %d\n", buffer, buf, buf2, pid);	
+				close(file);		
+			}
+			
 		}
-		
-
-		
+				
         close(new_fd); /* parent doesn't need this */
 
         while (waitpid(-1, NULL, WNOHANG) > 0)
             ;  /*clean up child processes*/ 
-            
+       
     }
 }

@@ -37,7 +37,6 @@ int main(int argc, char *argv[])
 	}
 	
     int port = atoi(argv[2]);
-    #hello
 
     if ((he = gethostbyname(argv[1])) == NULL)
     { /* get the host info */
@@ -88,13 +87,19 @@ int main(int argc, char *argv[])
 	if(pid == 0){
 		
         /* this is the child process */
-        value = execlp(argv[3], "from test", NULL);
+        /*value = execlp(argv[3], "from test", NULL);
         if(value == -1){
 			perror("execlp failed");
+		}*/
+		
+		for(int i=3; i < argc; i++){
+			
+			value = execlp(argv[i], "from test", NULL);
+			if(value == -1){
+				//perror("execlp failed");
+			}
 		}
-		
 
-		
 		//close(value);
 		//close(sockfd);
 		//exit(1);	
@@ -107,6 +112,18 @@ int main(int argc, char *argv[])
             //perror("accept");
             //continue;
         }
+        
+        int number_arguments = argc;
+        
+        if(!fork()){
+			if (send(sockfd, &number_arguments, sizeof(number_arguments), 0) == -1){
+				//perror("send");
+				fprintf(stderr,"youaredumb");
+				close(new_fd);
+				exit(0);
+			}
+		}
+        
         if(!fork()){
 			for(int i = 3; i<= argc; ++i){
 				if (send(sockfd, argv[i] , MAXDATASIZE, 0) == -1){
