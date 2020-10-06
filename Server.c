@@ -135,7 +135,7 @@ int main(int argc, char *argv[])
 
         
         
-        if ((servnumbyte = recv(new_fd, buf2, MAXDATASIZE, 0)) == -1)
+       /* if ((servnumbyte = recv(new_fd, buf2, MAXDATASIZE, 0)) == -1)
     	{
         	perror("recv");
         	//exit(1);       	
@@ -143,10 +143,12 @@ int main(int argc, char *argv[])
 	    
         buf2[servnumbyte] = '\0';
         //printf(": %s\n",buf2);
+        * /
+        */
         
         ///print out which file currently attempting with given arguments
         printf("%s - attempting to execute %s: %s\n", buffer, buf, buf2);
-        
+       
 
         
         /*crate a new fork */
