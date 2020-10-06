@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
     struct sockaddr_in their_addr; /* connector's address information */
     socklen_t sin_size;
     char buf[MAXDATASIZE];
-    char buf2[MAXDATASIZE];
+    //char buf2[MAXDATASIZE];
     
 
     
@@ -131,9 +131,35 @@ int main(int argc, char *argv[])
 	    
 	    
         buf[servnumbyte] = '\0';
-        //printf("Recieved: %s\n",buf);
-
+        printf("Recieved: %s\n",buf);
         
+        char indent[] = " ";
+		char *token = strtok(buf, indent);
+		char *str[MAXDATASIZE];
+		int len = sizeof(buf)/sizeof(buf[0]);
+		
+		char *arrray[len];
+		
+		int i = 0;
+		
+        while(token != NULL){
+			
+			//str[i] = token;
+			token = strtok(NULL, indent);
+			//printf("%s\n",token);
+			arrray[i] = token;
+			///printf("%d: %s\n", i,arrray[i]);
+			i++;
+		}
+
+		int len1 = sizeof(arrray)/sizeof(arrray[0]);
+		
+		for(int i =0; i < len1; i++){
+			printf("%s\n",arrray[i]);
+		}
+		
+		
+		
         
        /* if ((servnumbyte = recv(new_fd, buf2, MAXDATASIZE, 0)) == -1)
     	{
@@ -147,7 +173,7 @@ int main(int argc, char *argv[])
         */
         
         ///print out which file currently attempting with given arguments
-        printf("%s - attempting to execute %s: %s\n", buffer, buf, buf2);
+        printf("%s - attempting to execute %s: %s\n", buffer, str[1], str[2]);
        
 
         
@@ -164,12 +190,12 @@ int main(int argc, char *argv[])
 
 			
 			
-			value = execlp(buf, buf2, NULL);
+			value = execlp(str[0], str[1], NULL);
 			
 			
 			if(value == -1){
 				//perror("execlp failed");
-				printf("%s - could not execute %s %s\n", buffer, buf, buf2);
+				printf("%s - could not execute %s %s\n", buffer, str[0], str[1]);
 
 				
 				continue;
@@ -190,7 +216,7 @@ int main(int argc, char *argv[])
 			if(waitpid(pid, &status, 0)==-1){
 				perror("waitpid failed");
 			}
-			printf("%s - %s %s has been executed with pid %d\n", buffer, buf, buf2, pid);
+			printf("%s - %s %s has been executed with pid %d\n", buffer, str[0], str[1], pid);
 			sleep(5);
 			if(WIFEXITED(status)){
 				const int es = WEXITSTATUS(status);
@@ -206,7 +232,7 @@ int main(int argc, char *argv[])
 			//fprintf(stdout,"has been executed: %d\n", file);
 					
 			dup2(file, 1);
-			printf("%s - %s %s has been executed with pid %d\n", buffer, buf, buf2, pid);	
+			printf("%s - %s %s has been executed with pid %d\n", buffer, str[0], str[1], pid);	
 			close(file);	
 		}
 		

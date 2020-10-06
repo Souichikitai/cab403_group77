@@ -19,12 +19,10 @@ static void show_error(){
 
 int main(int argc, char *argv[])
 {
-    int sockfd, numbytes;//,new_fd;
+    int sockfd, numbytes;
     char buf[MAXDATASIZE];
     struct hostent *he;
-    struct sockaddr_in their_addr; /* connector's address information */
-    //struct sockaddr_in connect_addr; /* connector's address information */
-    //socklen_t sin_size;
+    struct sockaddr_in their_addr; 
 
     if (argc != 3)
     {
@@ -61,7 +59,7 @@ int main(int argc, char *argv[])
     if (connect(sockfd, (struct sockaddr *)&their_addr,
                 sizeof(struct sockaddr)) == -1)
     {
-        //perror("connect");
+        perror("connect");
         fprintf(stderr, "Could not connect with port %d\n", port);
         exit(1);
     }
@@ -74,8 +72,6 @@ int main(int argc, char *argv[])
     printf("%d\n",numbytes);
     
     buf[numbytes] = '\0';
-    //char * sendargv = NULL;
-    
     
 	char * send_value = "a";
 	int * sending_size = 0;
@@ -100,10 +96,7 @@ int main(int argc, char *argv[])
 		//sending_size = '\0';
 		
 		for(int i = 3; i < argc; i++){
-			
-			//printf("sending%s\n",send_value);
-			//strcpy(sendargv, argv[i]);
-			//strcat(send_value, " ");
+
 			strcat(send_value, argv[i]);
 			if(argc > i+1)
 			{
@@ -112,73 +105,16 @@ int main(int argc, char *argv[])
 						
 			
 		}
-		printf("?    %s     ?", send_value);
-    
-    /*crate a new fork */  
-    /*  
-    pid_t pid;
-    pid = fork();
-    //int value = 0;
-    if(pid < 0){
-		perror("Failed");
-	}
-	if(pid == 0){
-		
-       this is the child process 
-        //value = execlp(argv[3], "from test", NULL);
-        if(value == -1){
-			perror("execlp failed");
-		}
-		
-		
-
-
-		//printf("hello");
-		//close(value);
-		//close(sockfd);
-		//exit(1);	
-	*/
-
-	
-
-		/*sin_size = sizeof(struct sockaddr_in);
-        if ((new_fd = accept(sockfd, (struct sockaddr *)&connect_addr,
-                             &sin_size)) == -1)
-        {
-            //perror("accept");
-            //continue;
-        }*/
-
-		
-        /*if(!fork()){
-			
-				
-				if (send(sockfd, argv[3] , MAXDATASIZE, 0) == -1){
-				perror("send");
-				close(new_fd);
-				exit(0);
-				}
-				if (send(sockfd, argv[4] , MAXDATASIZE, 0) == -1){
-					perror("send");
-					close(new_fd);
-					exit(0);
-					
-				}
-
-		}*/
+		printf("?    %s     ?\n", send_value);
 		
 			printf("hi: %s\n", send_value);
 			
 			if (send(sockfd, send_value , (size_t)&sending_size, 0) == -1){
 				perror("send");
-				//close(new_fd);
+				
 				exit(0);
 				}
-//sizeof(argv[3])
 
-    
-
-    //close(new_fd);
-
+//arguments.split(" ");
     return 0;
 }
