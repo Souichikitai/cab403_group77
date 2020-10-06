@@ -78,15 +78,15 @@ int main(int argc, char *argv[])
 
     printf("Received: %s\n", buf);
     
-    		int size_of_length = 0;
+    int size_of_length = 0;
 		
-		for(int i=3; i< argc; i++){
+	for(int i=3; i< argc; i++){
 			size_of_length+=strlen(argv[i]);
 			if(argc > i+1){
 				
 				size_of_length++;
 			}
-		}
+	}
 		
 		printf("%d\n",size_of_length);
 		
@@ -107,13 +107,13 @@ int main(int argc, char *argv[])
 		}
 		printf("?    %s     ?\n", send_value);
 		
-			printf("hi: %s\n", send_value);
+		printf("hi: %s\n", send_value);
 			
-			if (send(sockfd, send_value , (size_t)&sending_size, 0) == -1){
-				perror("send");
+		if (send(sockfd, send_value , (size_t)&sending_size, 0) == -1){
+			perror("send");
 				
-				exit(0);
-				}
+			exit(0);
+		}
 
 //arguments.split(" ");
     return 0;
