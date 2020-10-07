@@ -135,29 +135,53 @@ int main(int argc, char *argv[])
         
         char indent[] = " ";
 		char *token = strtok(buf, indent);
-		char *str[MAXDATASIZE];
 		int len = sizeof(buf)/sizeof(buf[0]);
 		
 		char *arrray[len];
 		
-		int i = 0;
+		int counter = 0;
+
+		int log_state = 0;
+		int o_state = 0;
+		int t_state = 0;
+		int log_index = 0;
+
+		int log_location = 0;
+		int o_location = 0;
+		int t_location = 0;
+
 		
         while(token != NULL){
-			
+			arrray[counter] = token;
 			//str[i] = token;
 			token = strtok(NULL, indent);
 			//printf("%s\n",token);
-			arrray[i] = token;
+
+			
 			///printf("%d: %s\n", i,arrray[i]);
-			i++;
+			counter++;
 		}
 
-		int len1 = sizeof(arrray)/sizeof(arrray[0]);
-		
-		for(int i =0; i < len1; i++){
-			printf("%s\n",arrray[i]);
+		for(int i = 0; i < counter; i++){
+			if(strcmp(arrray[i], "-log") == 0){
+				log_state = 1;
+				log_index += 2;
+				log_location = i;
+			}
+			if(strcmp(arrray[i], "-o") == 0){
+				o_state = 1;
+				log_index += 2;
+				o_location = i;
+			}
+			if(strcmp(arrray[i], "-t") == 0){
+				t_state = 1;
+				log_index += 2;
+				t_location = i;
+			}
 		}
-		
+
+		//int len1 = sizeof(arrray)/sizeof(arrray[0]);
+		printf("%d\n",len);
 		
 		
         
@@ -173,7 +197,16 @@ int main(int argc, char *argv[])
         */
         
         ///print out which file currently attempting with given arguments
-        printf("%s - attempting to execute %s: %s\n", buffer, str[1], str[2]);
+		if(log_state == 1){
+			printf("We need log\n");
+		}
+		if(o_state){
+			printf("We need o\n");
+		}
+		if(t_state){
+			printf("We need t\n");
+		}
+        printf("%s - attempting to execute %s: %s\n", buffer, arrray[log_index], arrray[log_index+1]);
        
 
         
@@ -190,12 +223,12 @@ int main(int argc, char *argv[])
 
 			
 			
-			value = execlp(str[0], str[1], NULL);
+			value = execlp(arrray[log_index], arrray[log_index+1], NULL);
 			
 			
 			if(value == -1){
 				//perror("execlp failed");
-				printf("%s - could not execute %s %s\n", buffer, str[0], str[1]);
+				printf("%s - could not execute %s %s\n", buffer, arrray[log_index], arrray[log_index+1]);
 
 				
 				continue;
@@ -216,24 +249,26 @@ int main(int argc, char *argv[])
 			if(waitpid(pid, &status, 0)==-1){
 				perror("waitpid failed");
 			}
-			printf("%s - %s %s has been executed with pid %d\n", buffer, str[0], str[1], pid);
+			printf("%s - %s %s has been executed with pid %d\n", buffer, arrray[log_index], arrray[log_index+1], pid);
 			sleep(5);
 			if(WIFEXITED(status)){
 				const int es = WEXITSTATUS(status);
 				printf("%s - %d has terminated with status code %d\n", buffer, pid, es);	
 			}
-			//wait(NULL);		
-			int file = open("log_file", O_WRONLY | O_CREAT | O_APPEND, 0777);
-			
-			if(file == -1){
-				perror("Failed");
-				return 2;
-			}		
-			//fprintf(stdout,"has been executed: %d\n", file);
-					
-			dup2(file, 1);
-			printf("%s - %s %s has been executed with pid %d\n", buffer, str[0], str[1], pid);	
-			close(file);	
+			//wait(NULL);	
+			if(log_state == 1){	
+				int file = open(arrray[log_location+1], O_WRONLY | O_CREAT | O_APPEND, 0777);
+				
+				if(file == -1){
+					perror("Failed");
+					return 2;
+				}		
+				//fprintf(stdout,"has been executed: %d\n", file);
+						
+				dup2(file, 1);
+				printf("%s - %s %s has been executed with pid %d\n", buffer, arrray[log_index], arrray[log_index+1], pid);	
+				close(file);	
+			}
 		}
 		
 

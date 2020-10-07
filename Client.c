@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
     
     buf[numbytes] = '\0';
     
-	char * send_value = "a";
+	char * send_value = "";
 	int * sending_size = 0;
 
     printf("Received: %s\n", buf);
@@ -105,9 +105,9 @@ int main(int argc, char *argv[])
 						
 			
 		}
-		printf("?    %s     ?\n", send_value);
+		printf("%s\n", send_value);
 		
-		printf("hi: %s\n", send_value);
+		///printf("hi: %s\n", send_value);
 			
 		if (send(sockfd, send_value , (size_t)&sending_size, 0) == -1){
 			perror("send");

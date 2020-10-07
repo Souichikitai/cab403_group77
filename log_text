@@ -1,0 +1,28 @@
+2020-10-07 14:28:51 - /home/cab403/cab403_group77/test hello has been executed with pid 9359
+2020-10-07 14:29:08 - connection received from 127.0.0.1
+Recieved: -log log_text /home/cab403/cab403_group77/test hello hell hell hell
+256
+We need log
+2020-10-07 14:29:08 - attempting to execute /home/cab403/cab403_group77/test: hello
+Hello from test and given: hello
+2020-10-07 14:29:08 - /home/cab403/cab403_group77/test hello has been executed with pid 9378
+2020-10-07 14:29:08 - 9378 has terminated with status code 5
+2020-10-07 14:29:08 - /home/cab403/cab403_group77/test hello has been executed with pid 9378
+2020-10-07 14:29:33 - connection received from 127.0.0.1
+Recieved: -log log_text /home/cab403/cab403_group77/test hello hell hell hell
+256
+We need log
+2020-10-07 14:29:33 - attempting to execute /home/cab403/cab403_group77/test: hello
+Hello from test and given: hello
+2020-10-07 14:29:33 - /home/cab403/cab403_group77/test hello has been executed with pid 9503
+2020-10-07 14:29:33 - 9503 has terminated with status code 5
+2020-10-07 14:29:33 - /home/cab403/cab403_group77/test hello has been executed with pid 9503
+2020-10-07 14:30:21 - connection received from 127.0.0.1
+Recieved: -log log_text /home/cab403/cab403_group77/test hello hell hell hell
+256
+We need log
+2020-10-07 14:30:21 - attempting to execute /home/cab403/cab403_group77/test: hello
+Hello from test and given: hello
+2020-10-07 14:30:21 - /home/cab403/cab403_group77/test hello has been executed with pid 9514
+2020-10-07 14:30:21 - 9514 has terminated with status code 5
+2020-10-07 14:30:21 - /home/cab403/cab403_group77/test hello has been executed with pid 9514
