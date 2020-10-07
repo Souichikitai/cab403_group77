@@ -26,3 +26,33 @@ Hello from test and given: hello
 2020-10-07 14:30:21 - /home/cab403/cab403_group77/test hello has been executed with pid 9514
 2020-10-07 14:30:21 - 9514 has terminated with status code 5
 2020-10-07 14:30:21 - /home/cab403/cab403_group77/test hello has been executed with pid 9514
+2020-10-07 17:37:59 - /home/cab403/cab403_group77/test hi has been executed with pid 20267
+2020-10-07 17:39:08 - connection received from 127.0.0.1
+Recieved: file
+256
+2020-10-07 17:39:08 - attempting to execute file: H‹•HûÿÿH‰ÑL)ñH9Á…˜ûÿÿ¸ÿÿÿD)àH˜H9Á•ıÿÿAÌ€:
+2020-10-07 17:39:08 - file H‹•HûÿÿH‰ÑL)ñH9Á…˜ûÿÿ¸ÿÿÿD)àH˜H9Á•ıÿÿAÌ€: has been executed with pid 20294
+2020-10-07 17:39:08 - 20294 has terminated with status code 1
+2020-10-07 17:39:52 - connection received from 127.0.0.1
+Recieved: file
+256
+2020-10-07 17:39:52 - attempting to execute file: H‹•HûÿÿH‰ÑL)ñH9Á…˜ûÿÿ¸ÿÿÿD)àH˜H9Á•ıÿÿAÌ€:
+2020-10-07 17:39:52 - file H‹•HûÿÿH‰ÑL)ñH9Á…˜ûÿÿ¸ÿÿÿD)àH˜H9Á•ıÿÿAÌ€: has been executed with pid 20297
+2020-10-07 17:39:52 - 20297 has terminated with status code 1
+2020-10-07 17:39:59 - connection received from 127.0.0.1
+Recieved: file
+256
+2020-10-07 17:39:59 - attempting to execute file: H‹•HûÿÿH‰ÑL)ñH9Á…˜ûÿÿ¸ÿÿÿD)àH˜H9Á•ıÿÿAÌ€:
+2020-10-07 17:39:59 - file H‹•HûÿÿH‰ÑL)ñH9Á…˜ûÿÿ¸ÿÿÿD)àH˜H9Á•ıÿÿAÌ€: has been executed with pid 20392
+2020-10-07 17:39:59 - 20392 has terminated with status code 1
+2020-10-07 17:40:46 - connection received from 127.0.0.1
+Recieved: 
+256
+2020-10-07 17:40:46 - attempting to execute : H‹•HûÿÿH‰ÑL)ñH9Á…˜ûÿÿ¸ÿÿÿD)àH˜H9Á•ıÿÿAÌ€:
+2020-10-07 17:40:46 - could not execute  H‹•HûÿÿH‰ÑL)ñH9Á…˜ûÿÿ¸ÿÿÿD)àH˜H9Á•ıÿÿAÌ€:
+2020-10-07 17:40:46 - connection received from 127.0.0.1
+Recieved: file
+256
+2020-10-07 17:40:46 - attempting to execute file: H‹•HûÿÿH‰ÑL)ñH9Á…˜ûÿÿ¸ÿÿÿD)àH˜H9Á•ıÿÿAÌ€:
+2020-10-07 17:40:46 - file H‹•HûÿÿH‰ÑL)ñH9Á…˜ûÿÿ¸ÿÿÿD)àH˜H9Á•ıÿÿAÌ€: has been executed with pid 20398
+2020-10-07 17:40:46 - 20398 has terminated with status code 1
