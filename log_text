@@ -26,3 +26,5 @@ Hello from test and given: hello
 2020-10-07 14:30:21 - /home/cab403/cab403_group77/test hello has been executed with pid 9514
 2020-10-07 14:30:21 - 9514 has terminated with status code 5
 2020-10-07 14:30:21 - /home/cab403/cab403_group77/test hello has been executed with pid 9514
+2020-10-07 17:57:53 - /home/cab403/cab403_group77/test hi has been executed with pid 22028
+2020-10-07 18:10:31 - /home/cab403/cab403_group77/test hi has been executed with pid 22140

@@ -24,27 +24,44 @@ int main(int argc, char *argv[])
     struct hostent *he;
     struct sockaddr_in their_addr; 
 
-    if (argc != 3)
+    if (argc < 2)
     {
         //fprintf(stderr, "usage: <hostname> <port number>\n");
         //exit(1);
+        show_error();
     }
     
 	if (strcmp(argv[1], "--help") == 0){
 		show_error();
 	}
+
+    if(argv[2] == NULL){
+        show_error();
+        exit(1);
+    }
 	
     int port = atoi(argv[2]);
+    int flag = 0;
+
 
     if ((he = gethostbyname(argv[1])) == NULL)
     { /* get the host info */
         show_error();
+        //fprintf(stderr, "Could not connect with port %d\n", port);
+        perror("wrong");
         exit(1);
     }
+
+    if(strcmp(argv[1], "localhost") < 0){
+        fprintf(stderr, "Could not connect with port %d\n", port);
+        exit(1);
+    }
+    
 
 	/* generate the socket */
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
     {
+        show_error();
         perror("socket");
         exit(1);
     }
