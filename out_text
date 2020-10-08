@@ -1,0 +1,2 @@
+I recieved an argument: hello
+This message is sent to stdout. In three seconds I will terminate with a status code 5

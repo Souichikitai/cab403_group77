@@ -212,3 +212,8 @@ This message is sent to stdout. In three seconds I will terminate with a status 
       0    
 2020-10-08 16:01:32 - /home/cab403/cab403_group77/test hello has been executed with pid 12266
 2020-10-08 16:03:24 - /home/cab403/cab403_group77/test hello has been executed with pid 12388
+2020-10-08 16:18:07 - /home/cab403/cab403_group77/test hello has been executed with pid 13132
+2020-10-08 16:37:28 - /home/cab403/cab403_group77/test hello has been executed with pid 14408
+2020-10-08 16:39:15 - /home/cab403/cab403_group77/test hello has been executed with pid 14533
+2020-10-08 16:42:07 - /home/cab403/cab403_group77/test hello has been executed with pid 14661
+2020-10-08 16:42:30 - /home/cab403/cab403_group77/test hello has been executed with pid 14687

@@ -211,29 +211,26 @@ int main(int argc, char *argv[])
 		if(log_state == 1){
 			printf("We need log\n");
 		}
-		if(o_state){
+		if(o_state == 1){
 			printf("We need o\n");
 		}
-		if(t_state){
+		if(t_state == 1){
 			printf("We need t\n");
 		}
 
 		if(counter >= 4){
-			printf("%s - attempting to execute %s: %s\n", buffer, arrray[log_index], arrray[log_index+1]);
+			printf("%s - attempting to execute %s: %s\n", buffer, arrray[excuted_file_index], arrray[excuted_file_index+1]);
 		}else{
 
-			printf("%s - attempting to execute %s\n", buffer, arrray[log_index]);
+			printf("%s - attempting to execute %s\n", buffer, arrray[excuted_file_index]);
 		}
         
-       
 
-        
         /*crate a new fork */
-          
 		pid_t pid;
 		pid = fork();
 		int value = 0;
-		int file;
+		
 		if(pid < 0){
 			perror("Failed");
 		}
@@ -242,68 +239,77 @@ int main(int argc, char *argv[])
 
 			// printf("%d\n",excuted_file_index);
 			// printf("%d\n",log_index);
+			//printf("   %d    \n", o_state);
 			
-			value = execlp(arrray[excuted_file_index], arrray[excuted_file_index+1], NULL);
-			
-			
-			
-			if(value == -1){
-				//perror("execlp failed");
-				if(counter >= 4){
-					printf("%s - could not execute %s %s\n", buffer, arrray[log_index], arrray[log_index+1]);	
-				}else {
-					printf("%s - could not execute %s\n", buffer, arrray[log_index]);
+			if(o_state != 1){
+
+				value = execlp(arrray[excuted_file_index], arrray[excuted_file_index+1], NULL);
+
+				if(value == -1){
+					//perror("execlp failed");
+					if(counter >= 4){
+						printf("%s - could not execute %s %s\n", buffer, arrray[excuted_file_index], arrray[log_index+1]);	
+					}else {
+						printf("%s - could not execute %s\n", buffer, arrray[excuted_file_index]);
+					}
+					
+					continue;
 				}
-				
-				continue;
 			}
+			if(o_state == 1){	
+				int saved_stdout_o = dup(1);
+				int file1 = open(arrray[o_location+1], O_WRONLY | O_CREAT | O_APPEND, 0777);
+				
+				if(file1 == -1){
+					perror("Failed");
+					return 2;
+				}		
+				//fprintf(stdout,"has been executed: %d\n", file);
+						
+				dup2(file1, 1);
+				
+
+				value = execlp(arrray[excuted_file_index], arrray[excuted_file_index+1], NULL);
+				if(value == -1){
+					perror("execlp failed");
+				}
+
+				close(file1);
+
+				//redirect to terminal
+				dup2(saved_stdout_o, 1);
+				close(saved_stdout_o);
 			
+			}
 			/*close(value);
 			close(sockfd);*/
 			//exit(1);	
 		}
 		/*parent*/
 		if(pid > 0){						
-			
+			//printf("here1   %d    \n", o_state);
 						
 			int status;
 			
 			if(waitpid(pid, &status, 0)==-1){
 				perror("waitpid failed");
 			}
-			printf("%s - %s %s has been executed with pid %d\n", buffer, arrray[log_index], arrray[log_index+1], pid);
+			
+			printf("%s - %s %s has been executed with pid %d\n", buffer, arrray[excuted_file_index], arrray[excuted_file_index+1], pid);
 			sleep(5);
 			if(WIFEXITED(status)){
 				const int es = WEXITSTATUS(status);
 				printf("%s - %d has terminated with status code %d\n", buffer, pid, es);	
 			}
 			//wait(NULL);	
-
-			// if(o_state == 1){	
-			// 	int file1 = open(arrray[o_location+1], O_WRONLY | O_CREAT | O_APPEND, 0777);
-				
-			// 	if(file1 == -1){
-			// 		perror("Failed");
-			// 		return 2;
-			// 	}		
-			// 	//fprintf(stdout,"has been executed: %d\n", file);
-						
-			// 	dup2(file1, 2);
-
-			// 	value = execlp(arrray[log_index], arrray[log_index+1], NULL);
-			// 	if(value == -1){
-			// 		perror("execlp failed");
-			// 	}
-
-			// 	close(file1);
 			
-			// }
+
 
 			if(log_state == 1){	
 
 				int saved_stdout = dup(1);
 
-				file = open(arrray[log_location+1], O_WRONLY | O_CREAT | O_APPEND, 0777);
+				int file = open(arrray[log_location+1], O_WRONLY | O_CREAT | O_APPEND, 0777);
 				
 				if(file == -1){
 					perror("Failed");
@@ -315,13 +321,14 @@ int main(int argc, char *argv[])
 				printf("%s - %s %s has been executed with pid %d\n", buffer, arrray[log_index], arrray[log_index+1], pid);	
 				log_state = 0;
 				close(file);
+
+				//redirect to terminal
 				dup2(saved_stdout, 1);
 				close(saved_stdout);
 				
 			}
 			
-		}
-		close(file);		
+		}		
         close(new_fd); /* parent doesn't need this */
 
         while (waitpid(-1, NULL, WNOHANG) > 0)
