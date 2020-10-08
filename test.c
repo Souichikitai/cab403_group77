@@ -11,8 +11,16 @@
 
 int main(int argc, char *argv[])
 {
-	printf("Hello from test and given: %s\n", argv[0]);
-	
+	printf("I recieved an argument: %s\n", argv[0]);
+
+	fflush(stdout);
+
+	sleep(2);
+
+	fprintf(stderr, "stdderr wrriten\n");
+
+	printf("This message is sent to stdout. In three seconds I will terminate with a status code 5\n");
+
 	sleep(3);
     return 5;
 }

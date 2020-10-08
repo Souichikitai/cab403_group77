@@ -24,11 +24,17 @@ int main(int argc, char *argv[])
     struct hostent *he;
     struct sockaddr_in their_addr; 
 
-    if (argc < 2)
+    if (argc < 3)
     {
         //fprintf(stderr, "usage: <hostname> <port number>\n");
         //exit(1);
         show_error();
+        exit(1);
+    }
+
+    if(argv[3] == NULL){
+        show_error();
+        exit(1);
     }
     
 	if (strcmp(argv[1], "--help") == 0){
@@ -86,14 +92,14 @@ int main(int argc, char *argv[])
         perror("recv");
         exit(1);
     }
-    printf("%d\n",numbytes);
+    //printf("%d\n",numbytes);
     
     buf[numbytes] = '\0';
     
 	char * send_value = "";
 	int * sending_size = 0;
 
-    printf("Received: %s\n", buf);
+    //printf("Received: %s\n", buf);
     
     int size_of_length = 0;
 		
@@ -105,7 +111,7 @@ int main(int argc, char *argv[])
 			}
 	}
 		
-		printf("%d\n",size_of_length);
+		//printf("%d\n",size_of_length);
 		
 		send_value = malloc(size_of_length);
 		send_value[0] = '\0';
@@ -122,11 +128,8 @@ int main(int argc, char *argv[])
 						
 			
 		}
-		printf("%s\n", send_value);
-		
-		///printf("hi: %s\n", send_value);
 			
-		if (send(sockfd, send_value , (size_t)&sending_size, 0) == -1){
+		if (send(sockfd, send_value , (size_t)&size_of_length, 0) == -1){
 			perror("send");
 				
 			exit(0);

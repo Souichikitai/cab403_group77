@@ -28,3 +28,187 @@ Hello from test and given: hello
 2020-10-07 14:30:21 - /home/cab403/cab403_group77/test hello has been executed with pid 9514
 2020-10-07 17:57:53 - /home/cab403/cab403_group77/test hi has been executed with pid 22028
 2020-10-07 18:10:31 - /home/cab403/cab403_group77/test hi has been executed with pid 22140
+2020-10-08 14:38:24 - /home/cab403/cab403_group77/test hello has been executed with pid 6704
+2020-10-08 14:39:04 - connection received from 127.0.0.1
+Recieved: -log log_text /home/cab403/cab403_group77/test hello
+4
+We need log
+2020-10-08 14:39:04 - attempting to execute /home/cab403/cab403_group77/test: hello
+Hello from test and given: hello
+2020-10-08 14:39:04 - /home/cab403/cab403_group77/test hello has been executed with pid 7473
+2020-10-08 14:39:04 - 7473 has terminated with status code 5
+2020-10-08 14:39:04 - /home/cab403/cab403_group77/test hello has been executed with pid 7473
+2020-10-08 14:42:58 - connection received from 127.0.0.1
+Recieved: -log log_text /home/cab403/cab403_group77/test hello
+4
+We need log
+2020-10-08 14:42:58 - attempting to execute /home/cab403/cab403_group77/test: hello
+Hello from test and given: hello
+2020-10-08 14:42:58 - /home/cab403/cab403_group77/test hello has been executed with pid 7534
+2020-10-08 14:42:58 - 7534 has terminated with status code 5
+2020-10-08 14:42:58 - /home/cab403/cab403_group77/test hello has been executed with pid 7534
+2020-10-08 14:44:07 - connection received from 127.0.0.1
+Recieved: -log log_text /home/cab403/cab403_group77/test hello
+4
+We need log
+2020-10-08 14:44:07 - attempting to execute /home/cab403/cab403_group77/test: hello
+Hello from test and given: hello
+2020-10-08 14:44:07 - /home/cab403/cab403_group77/test hello has been executed with pid 7560
+2020-10-08 14:44:07 - 7560 has terminated with status code 5
+2020-10-08 14:44:07 - /home/cab403/cab403_group77/test hello has been executed with pid 7560
+2020-10-08 14:44:18 - connection received from 127.0.0.1
+Recieved: -log log_text /home/cab403/cab403_group77/test hello
+4
+We need log
+2020-10-08 14:44:18 - attempting to execute /home/cab403/cab403_group77/test: hello
+Hello from test and given: hello
+2020-10-08 14:44:18 - /home/cab403/cab403_group77/test hello has been executed with pid 7610
+2020-10-08 14:44:18 - 7610 has terminated with status code 5
+2020-10-08 14:44:18 - /home/cab403/cab403_group77/test hello has been executed with pid 7610
+2020-10-08 14:54:01 - /home/cab403/cab403_group77/test hello has been executed with pid 8058
+2020-10-08 14:54:13 - connection received from 127.0.0.1
+Recieved: /home/cab403/cab403_group77/test hello
+2
+2020-10-08 14:54:13 - attempting to execute /home/cab403/cab403_group77/test
+Hello from test and given: hello
+2020-10-08 14:54:13 - /home/cab403/cab403_group77/test hello has been executed with pid 8077
+2020-10-08 14:54:13 - 8077 has terminated with status code 5
+2020-10-08 14:54:30 - connection received from 127.0.0.1
+Recieved: /home/cab403/cab403_group77/test hello
+2
+2020-10-08 14:54:30 - attempting to execute /home/cab403/cab403_group77/test
+Hello from test and given: hello
+2020-10-08 14:54:30 - /home/cab403/cab403_group77/test hello has been executed with pid 8083
+2020-10-08 14:54:30 - 8083 has terminated with status code 5
+2020-10-08 14:54:38 - connection received from 127.0.0.1
+Recieved: -log log_text /home/cab403/cab403_group77/test hello
+4
+We need log
+2020-10-08 14:54:38 - attempting to execute /home/cab403/cab403_group77/test: hello
+Hello from test and given: hello
+2020-10-08 14:54:38 - /home/cab403/cab403_group77/test hello has been executed with pid 8089
+2020-10-08 14:54:38 - 8089 has terminated with status code 5
+2020-10-08 14:54:38 - /home/cab403/cab403_group77/test hello has been executed with pid 8089
+2020-10-08 14:55:01 - connection received from 127.0.0.1
+Recieved: /home/cab403/cab403_group77/test hellof
+2
+2020-10-08 14:55:01 - attempting to execute /home/cab403/cab403_group77/test
+Hello from test and given: hellof
+2020-10-08 14:55:01 - /home/cab403/cab403_group77/test hellof has been executed with pid 8092
+2020-10-08 14:55:01 - 8092 has terminated with status code 5
+2020-10-08 15:35:40 - /home/cab403/cab403_group77/test hello has been executed with pid 10762
+2020-10-08 15:36:01 - connection received from 127.0.0.1
+Recieved: -log log_text /home/cab403/cab403_group77/test hello
+4
+We need log
+2020-10-08 15:36:01 - attempting to execute /home/cab403/cab403_group77/test: hello
+2
+2
+I recieved an argument: hello
+This message is sent to stdout. In three seconds I will terminate with a status code 5
+2020-10-08 15:36:01 - /home/cab403/cab403_group77/test hello has been executed with pid 10765
+2020-10-08 15:36:01 - 10765 has terminated with status code 5
+2020-10-08 15:36:01 - /home/cab403/cab403_group77/test hello has been executed with pid 10765
+2020-10-08 15:36:14 - connection received from 127.0.0.1
+Recieved: /home/cab403/cab403_group77/test hello
+2
+2020-10-08 15:36:14 - attempting to execute /home/cab403/cab403_group77/test
+0
+0
+I recieved an argument: hello
+This message is sent to stdout. In three seconds I will terminate with a status code 5
+2020-10-08 15:36:14 - /home/cab403/cab403_group77/test hello has been executed with pid 10795
+2020-10-08 15:36:14 - 10795 has terminated with status code 5
+2020-10-08 15:36:55 - connection received from 127.0.0.1
+Recieved: /home/cab403/cab403_group77/test hello
+2
+2020-10-08 15:36:55 - attempting to execute /home/cab403/cab403_group77/test
+0
+0
+I recieved an argument: hello
+This message is sent to stdout. In three seconds I will terminate with a status code 5
+2020-10-08 15:36:55 - /home/cab403/cab403_group77/test hello has been executed with pid 10821
+2020-10-08 15:36:55 - 10821 has terminated with status code 5
+2020-10-08 15:38:57 - /home/cab403/cab403_group77/test hello has been executed with pid 10897
+2020-10-08 15:39:10 - connection received from 127.0.0.1
+Recieved: /home/cab403/cab403_group77/test hello
+2
+2020-10-08 15:39:10 - attempting to execute /home/cab403/cab403_group77/test
+0
+0
+I recieved an argument: hello
+This message is sent to stdout. In three seconds I will terminate with a status code 5
+2020-10-08 15:39:10 - /home/cab403/cab403_group77/test hello has been executed with pid 10928
+2020-10-08 15:39:10 - 10928 has terminated with status code 5
+2020-10-08 15:40:32 - /home/cab403/cab403_group77/test hello has been executed with pid 11056
+2020-10-08 15:40:44 - connection received from 127.0.0.1
+Recieved: /home/cab403/cab403_group77/test hello
+2
+2020-10-08 15:40:44 - attempting to execute /home/cab403/cab403_group77/test
+0
+0
+I recieved an argument: hello
+This message is sent to stdout. In three seconds I will terminate with a status code 5
+2020-10-08 15:40:44 - /home/cab403/cab403_group77/test hello has been executed with pid 11059
+2020-10-08 15:40:44 - 11059 has terminated with status code 5
+2020-10-08 15:42:24 - /home/cab403/cab403_group77/test hello has been executed with pid 11159
+2020-10-08 15:42:38 - connection received from 127.0.0.1
+Recieved: /home/cab403/cab403_group77/test hello
+2
+2020-10-08 15:42:38 - attempting to execute /home/cab403/cab403_group77/test
+0
+0
+I recieved an argument: hello
+This message is sent to stdout. In three seconds I will terminate with a status code 5
+2020-10-08 15:42:38 - /home/cab403/cab403_group77/test hello has been executed with pid 11165
+2020-10-08 15:42:38 - 11165 has terminated with status code 5
+2020-10-08 15:44:17 - /home/cab403/cab403_group77/test hello has been executed with pid 11309
+2020-10-08 15:44:29 - connection received from 127.0.0.1
+Recieved: /home/cab403/cab403_group77/test hello
+2
+2020-10-08 15:44:29 - attempting to execute /home/cab403/cab403_group77/test
+0
+0
+I recieved an argument: hello
+This message is sent to stdout. In three seconds I will terminate with a status code 5
+2020-10-08 15:44:29 - /home/cab403/cab403_group77/test hello has been executed with pid 11312
+2020-10-08 15:44:29 - 11312 has terminated with status code 5
+12020-10-08 15:47:29 - /home/cab403/cab403_group77/test hello has been executed with pid 11466
+2020-10-08 15:48:03 - /home/cab403/cab403_group77/test hello has been executed with pid 11507
+2020-10-08 15:48:16 - connection received from 127.0.0.1
+Recieved: /home/cab403/cab403_group77/test hello
+2020-10-08 15:48:16 - attempting to execute /home/cab403/cab403_group77/test
+I recieved an argument: hello
+This message is sent to stdout. In three seconds I will terminate with a status code 5
+2020-10-08 15:48:16 - /home/cab403/cab403_group77/test hello has been executed with pid 11526
+2020-10-08 15:48:16 - 11526 has terminated with status code 5
+      0    
+2020-10-08 15:50:43 - /home/cab403/cab403_group77/test hello has been executed with pid 11686
+2020-10-08 15:50:57 - connection received from 127.0.0.1
+Recieved: /home/cab403/cab403_group77/test hello
+2020-10-08 15:50:57 - attempting to execute /home/cab403/cab403_group77/test
+I recieved an argument: hello
+This message is sent to stdout. In three seconds I will terminate with a status code 5
+2020-10-08 15:50:57 - /home/cab403/cab403_group77/test hello has been executed with pid 11693
+2020-10-08 15:50:57 - 11693 has terminated with status code 5
+      0    
+2020-10-08 15:54:31 - /home/cab403/cab403_group77/test hello has been executed with pid 11900
+2020-10-08 15:54:44 - connection received from 127.0.0.1
+Recieved: /home/cab403/cab403_group77/test hello
+2020-10-08 15:54:44 - attempting to execute /home/cab403/cab403_group77/test
+I recieved an argument: hello
+This message is sent to stdout. In three seconds I will terminate with a status code 5
+2020-10-08 15:54:44 - /home/cab403/cab403_group77/test hello has been executed with pid 11903
+2020-10-08 15:54:44 - 11903 has terminated with status code 5
+      0    
+2020-10-08 15:57:53 - /home/cab403/cab403_group77/test hello has been executed with pid 12036
+2020-10-08 15:58:05 - connection received from 127.0.0.1
+Recieved: /home/cab403/cab403_group77/test hello
+2020-10-08 15:58:05 - attempting to execute /home/cab403/cab403_group77/test
+I recieved an argument: hello
+This message is sent to stdout. In three seconds I will terminate with a status code 5
+2020-10-08 15:58:05 - /home/cab403/cab403_group77/test hello has been executed with pid 12040
+2020-10-08 15:58:05 - 12040 has terminated with status code 5
+      0    
+2020-10-08 16:01:32 - /home/cab403/cab403_group77/test hello has been executed with pid 12266
+2020-10-08 16:03:24 - /home/cab403/cab403_group77/test hello has been executed with pid 12388
