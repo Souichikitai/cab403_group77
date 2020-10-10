@@ -59,7 +59,13 @@ void connection_handler(int client_socket){
 		
 		printf("%d\n",servnumbyte);
 		*/
-        
+    // if (!fork())
+    // { /* this is the child process */
+    //     if (send(new_fd, "Hello, worldj!\n", 15, 0) == -1)
+    //         perror("send");
+    //     	close(new_fd);
+    //         exit(0);
+    // }   
         
 	if ((servnumbyte = recv(new_fd, buf, MAXDATASIZE, 0)) == -1)
     {

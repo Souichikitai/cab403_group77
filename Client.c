@@ -87,14 +87,14 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    if ((numbytes = recv(sockfd, buf, MAXDATASIZE, 0)) == -1)
-    {
-        perror("recv");
-        exit(1);
-    }
-    //printf("%d\n",numbytes);
+    // if ((numbytes = recv(sockfd, buf, MAXDATASIZE, 0)) == -1)
+    // {
+    //     perror("recv");
+    //     exit(1);
+    // }
+    // //printf("%d\n",numbytes);
     
-    buf[numbytes] = '\0';
+    // buf[numbytes] = '\0';
     
 	char * send_value = "";
 	int * sending_size = 0;
