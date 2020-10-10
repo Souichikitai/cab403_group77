@@ -233,3 +233,6 @@ This message is sent to stdout. In three seconds I will terminate with a status 
 2020-10-10 15:10:30 - attempting to execute /home/cab403/cab403_group77/test: hello_cy
 2020-10-10 15:10:30 - /home/cab403/cab403_group77/test hello_cy has been executed with pid 10683
 2020-10-10 15:10:30 - 10683 has terminated with status code 5
+2020-10-10 16:37:27 - attempting to execute /home/cab403/cab403_group77/test: hello
+2020-10-10 16:37:27 - /home/cab403/cab403_group77/test hello has been executed with pid 6824
+2020-10-10 16:37:32 - 6824 has terminated with status code 5

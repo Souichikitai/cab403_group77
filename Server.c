@@ -29,26 +29,33 @@ socklen_t sin_size;
 char buf[MAXDATASIZE];
 
 
+char * whattime(){
 
-void connection_handler(int client_socket){
+	static char buffer[26];
 
 	time_t timer;
-	char buffer[26];
+	
 	struct tm* tm_info;
     
 	timer = time(NULL);
 	tm_info = localtime(&timer);
 	strftime(buffer, 26, "%Y-%m-%d %H:%M:%S", tm_info);
-		
+	return buffer;
+}
+
+void connection_handler(int client_socket){
+
+
     sin_size = sizeof(struct sockaddr_in);
     if ((new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size)) == -1)
     {
         perror("accept");
         //continue;
     }
+
         
     //Print time and connection messages        
-    printf("%s - connection received from %s\n", buffer,
+    printf("%s - connection received from %s\n", whattime(),
     inet_ntoa(their_addr.sin_addr));
         /*    
         if ((servnumbyte = recv(sockfd, buf, MAXDATASIZE, 0)) == -1)
@@ -160,11 +167,11 @@ void connection_handler(int client_socket){
 
 			if(!log_state){
 				if(counter >= 4){
-					printf("%s - attempting to execute %s: %s\n", buffer, arrray[excuted_file_index], arrray[excuted_file_index+1]);
+					printf("%s - attempting to execute %s: %s\n", whattime(), arrray[excuted_file_index], arrray[excuted_file_index+1]);
 				}else{
-					printf("%s - attempting to execute %s\n", buffer, arrray[excuted_file_index]);
+					printf("%s - attempting to execute %s\n", whattime(), arrray[excuted_file_index]);
 				}		
-				printf("%s - %s %s has been executed with pid %d\n", buffer, arrray[excuted_file_index], arrray[excuted_file_index+1], getpid());
+				printf("%s - %s %s has been executed with pid %d\n", whattime(), arrray[excuted_file_index], arrray[excuted_file_index+1], getpid());
 			}
 			if(log_state){
 				int saved_stdout = dup(1);
@@ -175,11 +182,11 @@ void connection_handler(int client_socket){
 				}								
 				dup2(file, 1);
 				if(counter >= 4){
-					printf("%s - attempting to execute %s: %s\n", buffer, arrray[excuted_file_index], arrray[excuted_file_index+1]);
+					printf("%s - attempting to execute %s: %s\n", whattime(), arrray[excuted_file_index], arrray[excuted_file_index+1]);
 				}else{
-					printf("%s - attempting to execute %s\n", buffer, arrray[excuted_file_index]);
+					printf("%s - attempting to execute %s\n", whattime(), arrray[excuted_file_index]);
 				}	
-				printf("%s - %s %s has been executed with pid %d\n", buffer, arrray[excuted_file_index], arrray[excuted_file_index+1], getpid());
+				printf("%s - %s %s has been executed with pid %d\n", whattime(), arrray[excuted_file_index], arrray[excuted_file_index+1], getpid());
 				close(file);
 				//redirect to terminal
 				dup2(saved_stdout, 1);
@@ -194,9 +201,9 @@ void connection_handler(int client_socket){
 				if(value == -1){
 					//perror("execlp failed");
 					if(counter >= 4){
-						printf("%s - could not execute %s %s\n", buffer, arrray[excuted_file_index], arrray[log_index+1]);	
+						printf("%s - could not execute %s %s\n", whattime(), arrray[excuted_file_index], arrray[log_index+1]);	
 					}else {
-						printf("%s - could not execute %s\n", buffer, arrray[excuted_file_index]);
+						printf("%s - could not execute %s\n", whattime(), arrray[excuted_file_index]);
 					}
 					
 					//continue;
@@ -245,7 +252,7 @@ void connection_handler(int client_socket){
 				//printf("%s - %s %s has been executed with pid %d\n", buffer, arrray[excuted_file_index], arrray[excuted_file_index+1], pid);
 				if(WIFEXITED(status)){
 					const int es = WEXITSTATUS(status);
-					printf("%s - %d has terminated with status code %d\n", buffer, pid, es);	
+					printf("%s - %d has terminated with status code %d\n", whattime(), pid, es);	
 				}
 			}
 			//printf("%s - %s %s has been executed with pid %d\n", buffer, arrray[excuted_file_index], arrray[excuted_file_index+1], pid);
@@ -269,7 +276,7 @@ void connection_handler(int client_socket){
 				//printf("%s - %s %s has been executed with pid %d\n", buffer, arrray[log_index], arrray[log_index+1], pid);
 				if(WIFEXITED(status)){
 					const int es = WEXITSTATUS(status);
-					printf("%s - %d has terminated with status code %d\n", buffer, pid, es);	
+					printf("%s - %d has terminated with status code %d\n", whattime(), pid, es);	
 				}
 				log_state = 0;
 				close(file);
