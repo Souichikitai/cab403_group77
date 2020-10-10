@@ -19,8 +19,9 @@ static void show_error(){
 
 int main(int argc, char *argv[])
 {
-    int sockfd, numbytes;
-    char buf[MAXDATASIZE];
+    int sockfd;
+    //int numbytes;
+    //char buf[MAXDATASIZE];
     struct hostent *he;
     struct sockaddr_in their_addr; 
 
@@ -47,7 +48,7 @@ int main(int argc, char *argv[])
     }
 	
     int port = atoi(argv[2]);
-    int flag = 0;
+    //int flag = 0;
 
 
     if ((he = gethostbyname(argv[1])) == NULL)
@@ -97,7 +98,7 @@ int main(int argc, char *argv[])
     // buf[numbytes] = '\0';
     
 	char * send_value = "";
-	int * sending_size = 0;
+	//int * sending_size = 0;
 
     //printf("Received: %s\n", buf);
     

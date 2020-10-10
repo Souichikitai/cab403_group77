@@ -15,10 +15,15 @@
 #include <unistd.h>
 #include <time.h>
 #include <fcntl.h>
-
+#include <pthread.h>
+#include "linked_que.h"
 
 #define BACKLOG 10 /* how many pending connections queue will hold */
 #define MAXDATASIZE 256 /* max number of bytes we can get at once */
+#define THREADS_NUM 5
+
+pthread_t thread_pool[THREADS_NUM];
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 int sockfd, new_fd, servnumbyte;            /* listen on sock_fd, new connection on new_fd */
 
@@ -27,7 +32,84 @@ struct sockaddr_in their_addr; /* connector's address information */
 socklen_t sin_size;
 
 char buf[MAXDATASIZE];
+void* connection_handler(void *client_socket);
+char * whattime();
+void *thread_controller(void *arg);
 
+/*#define MYPORT 54321 the port users will be connecting to */
+
+
+
+int main(int argc, char *argv[])
+{
+    
+    /* generate the socket */
+    if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+    {
+        perror("socket");
+        exit(1);
+    }
+    
+    if(argc != 2){
+		fprintf(stderr, "usage: <port number>\n");
+		exit(1); 
+	}
+	
+	int my_port = atoi(argv[1]);
+
+    /* Enable address/port reuse, useful for server development */
+    int opt_enable = 1;
+    setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &opt_enable, sizeof(opt_enable));
+    setsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT, &opt_enable, sizeof(opt_enable));
+    
+   
+    /* clear address struct */
+    memset(&my_addr, 0, sizeof(my_addr));
+
+    /* generate the end point */
+    my_addr.sin_family = AF_INET;         /* host byte order */
+    my_addr.sin_port = htons(my_port);     /* short, network byte order */
+    my_addr.sin_addr.s_addr = INADDR_ANY; /* auto-fill with my IP */
+
+    /* bind the socket to the end point */
+    if (bind(sockfd, (struct sockaddr *)&my_addr, sizeof(struct sockaddr)) == -1)
+    {
+        perror("bind");
+        exit(1);
+    }
+
+    /* start listnening */
+    if (listen(sockfd, BACKLOG) == -1)
+    {
+        perror("listen");
+        exit(1);
+    }
+    
+    printf("server starts listening ...\n");
+
+	/*Initializing 5 threads*/
+	for(int i =0; i < THREADS_NUM; i++){
+		pthread_create(&thread_pool[i], NULL, thread_controller, &sockfd);
+	}
+
+
+    /* repeat: accept, send, close the connection */
+    /* for every accepted connection, use a sepetate process or thread to serve it */
+    while (1)
+    { /* main accept() loop */
+
+		pthread_mutex_lock(&mutex);
+		append_que(&sockfd);
+		pthread_mutex_unlock(&mutex);
+
+		for(int i =0; i < THREADS_NUM; i++){
+			pthread_join(thread_pool[i], NULL);
+		}
+		//connection_handler(sockfd);          
+    }
+
+	
+}
 
 char * whattime(){
 
@@ -43,11 +125,21 @@ char * whattime(){
 	return buffer;
 }
 
-void connection_handler(int client_socket){
+void *thread_controller(void *arg){
+	while(1){
+		int *pclient = remove_que();
+		if(pclient != NULL){
+			connection_handler(pclient);
+		}
+	}
+}
 
+void* connection_handler(void *p_thread_client_socket){
+
+	int client_socket = *((int*)p_thread_client_socket);
 
     sin_size = sizeof(struct sockaddr_in);
-    if ((new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size)) == -1)
+    if ((new_fd = accept(client_socket, (struct sockaddr *)&their_addr, &sin_size)) == -1)
     {
         perror("accept");
         //continue;
@@ -103,7 +195,7 @@ void connection_handler(int client_socket){
 
 	int log_location = 0;
 	int o_location = 0;
-	int t_location = 0;
+	//int t_location = 0;
 		
     while(token != NULL){
 		arrray[counter] = token;
@@ -129,7 +221,7 @@ void connection_handler(int client_socket){
 		if(strcmp(arrray[i], "-t") == 0){
 			t_state = 1;
 			t_index += 2 + log_index;
-			t_location = i;
+			//t_location = i;
 			excuted_file_index+=2;
 		}
 	}
@@ -292,65 +384,6 @@ void connection_handler(int client_socket){
 
         while (waitpid(-1, NULL, WNOHANG) > 0)
             ;  /*clean up child processes*/ 
-}
-
-
-/*#define MYPORT 54321 the port users will be connecting to */
-
-
-
-int main(int argc, char *argv[])
-{
-    
-    
-    /* generate the socket */
-    if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
-    {
-        perror("socket");
-        exit(1);
-    }
-    
-    if(argc != 2){
-		fprintf(stderr, "usage: <port number>\n");
-		exit(1); 
-	}
-	
-	int my_port = atoi(argv[1]);
-
-    /* Enable address/port reuse, useful for server development */
-    int opt_enable = 1;
-    setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &opt_enable, sizeof(opt_enable));
-    setsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT, &opt_enable, sizeof(opt_enable));
-    
-   
-    /* clear address struct */
-    memset(&my_addr, 0, sizeof(my_addr));
-
-    /* generate the end point */
-    my_addr.sin_family = AF_INET;         /* host byte order */
-    my_addr.sin_port = htons(my_port);     /* short, network byte order */
-    my_addr.sin_addr.s_addr = INADDR_ANY; /* auto-fill with my IP */
-
-    /* bind the socket to the end point */
-    if (bind(sockfd, (struct sockaddr *)&my_addr, sizeof(struct sockaddr)) == -1)
-    {
-        perror("bind");
-        exit(1);
-    }
-
-    /* start listnening */
-    if (listen(sockfd, BACKLOG) == -1)
-    {
-        perror("listen");
-        exit(1);
-    }
-    
-    printf("server starts listening ...\n");
-         
-    /* repeat: accept, send, close the connection */
-    /* for every accepted connection, use a sepetate process or thread to serve it */
-    while (1)
-    { /* main accept() loop */		
-		connection_handler(sockfd);          
-    }
+		
+		return 0;
 }
