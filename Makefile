@@ -16,6 +16,6 @@ test.o: test.c
 			$(CC) -o test test.c
 
 clean:
-	rm -f fibfork *.o 
+	rm -f overseer *.o , controller *.o
  
 .PHONY: clean

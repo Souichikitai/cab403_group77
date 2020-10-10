@@ -217,3 +217,19 @@ This message is sent to stdout. In three seconds I will terminate with a status 
 2020-10-08 16:39:15 - /home/cab403/cab403_group77/test hello has been executed with pid 14533
 2020-10-08 16:42:07 - /home/cab403/cab403_group77/test hello has been executed with pid 14661
 2020-10-08 16:42:30 - /home/cab403/cab403_group77/test hello has been executed with pid 14687
+2020-10-10 14:09:50 - /home/cab403/cab403_group77/test hhdhdhhd has been executed with pid 7629
+2020-10-10 14:10:11 - /home/cab403/cab403_group77/test hhdhdhhd has been executed with pid 7637
+2020-10-10 14:10:38 - /home/cab403/cab403_group77/test hhdhdhhd has been executed with pid 7645
+2020-10-10 14:16:30 - /home/cab403/cab403_group77/test hhdhdhhd has been executed with pid 7913
+2020-10-10 14:16:30 - 7913 has terminated with status code 5
+2020-10-10 14:44:02 - /home/cab403/cab403_group77/test hhdhdhhd has been executed with pid 9679
+2020-10-10 14:44:02 - 9679 has terminated with status code 5
+2020-10-10 14:48:06 - /home/cab403/cab403_group77/test hhdhdhhd has been executed with pid 9808
+2020-10-10 14:48:06 - 9808 has terminated with status code 5
+2020-10-10 14:50:38 - /home/cab403/cab403_group77/test hhd has been executed with pid 9815
+2020-10-10 14:50:38 - 9815 has terminated with status code 5
+2020-10-10 14:50:52 - /home/cab403/cab403_group77/test  has been executed with pid 10103
+2020-10-10 14:50:52 - 10103 has terminated with status code 5
+2020-10-10 15:10:30 - attempting to execute /home/cab403/cab403_group77/test: hello_cy
+2020-10-10 15:10:30 - /home/cab403/cab403_group77/test hello_cy has been executed with pid 10683
+2020-10-10 15:10:30 - 10683 has terminated with status code 5

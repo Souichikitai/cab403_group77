@@ -14,6 +14,7 @@ int main(int argc, char *argv[])
 	printf("I recieved an argument: %s\n", argv[0]);
 
 	fflush(stdout);
+	
 
 	sleep(2);
 
