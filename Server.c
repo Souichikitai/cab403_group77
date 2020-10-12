@@ -88,9 +88,9 @@ int main(int argc, char *argv[])
     printf("server starts listening ...\n");
 
 	/*Initializing 5 threads*/
-	for(int i =0; i < THREADS_NUM; i++){
-		pthread_create(&thread_pool[i], NULL, thread_controller, &sockfd);
-	}
+	// for(int i =0; i < THREADS_NUM; i++){
+	// 	pthread_create(&thread_pool[i], NULL, thread_controller, &sockfd);
+	// }
 
 
     /* repeat: accept, send, close the connection */
@@ -98,17 +98,38 @@ int main(int argc, char *argv[])
     while (1)
     { /* main accept() loop */
 
-		pthread_mutex_lock(&mutex);
-		append_que(&sockfd);
-		pthread_mutex_unlock(&mutex);
+		// pthread_mutex_lock(&mutex);
+		// append_que(&sockfd);
+		// pthread_mutex_unlock(&mutex);
 
-		for(int i =0; i < THREADS_NUM; i++){
-			pthread_join(thread_pool[i], NULL);
+		// for(int i =0; i < THREADS_NUM; i++){
+		// 	pthread_join(thread_pool[i], NULL);
+		// }
+
+		
+
+		sin_size = sizeof(struct sockaddr_in);
+		if ((new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size)) != -1)
+		{
+			
+			pthread_t t;
+			//pthread_t t1;
+			int *pclient = malloc(sizeof(int));
+			*pclient = sockfd;
+			//connection_handler(pclient);         
+			pthread_create(&t, NULL, connection_handler, NULL);
+			//continue;
+		}else{
+			perror("accept");
 		}
-		//connection_handler(sockfd);          
+
+		//pthread_create(&t1, NULL, connection_handler, pclient);
     }
 
-	
+	//free(sockfd);
+	close(sockfd);
+
+	return 0;
 }
 
 char * whattime(){
@@ -136,14 +157,15 @@ void *thread_controller(void *arg){
 
 void* connection_handler(void *p_thread_client_socket){
 
-	int client_socket = *((int*)p_thread_client_socket);
+	//int client_socket = *((int*)p_thread_client_socket);
+	//free(p_thread_client_socket);
 
-    sin_size = sizeof(struct sockaddr_in);
-    if ((new_fd = accept(client_socket, (struct sockaddr *)&their_addr, &sin_size)) == -1)
-    {
-        perror("accept");
-        //continue;
-    }
+    // sin_size = sizeof(struct sockaddr_in);
+    // if ((new_fd = accept(client_socket, (struct sockaddr *)&their_addr, &sin_size)) == -1)
+    // {
+    //     perror("accept");
+    //     //continue;
+    // }
 
         
     //Print time and connection messages        
