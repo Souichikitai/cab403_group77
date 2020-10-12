@@ -7,34 +7,68 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <time.h>
+
 
 #define MAXDATASIZE 100 /* max number of bytes we can get at once */
 
+static void show_error(){
+		fprintf(stderr, "usage: controller <address> <port> {[- out_file] [-log log_file] [-t seconds] <file> [arg...] | mem [pid] | memkill <percent>}\n");
+		exit(1);
+}
 
-#test
 int main(int argc, char *argv[])
 {
-    int sockfd, numbytes;
-    char buf[MAXDATASIZE];
+    int sockfd;
+    //int numbytes;
+    //char buf[MAXDATASIZE];
     struct hostent *he;
-    struct sockaddr_in their_addr; /* connector's address information */
+    struct sockaddr_in their_addr; 
 
-    if (argc != 3)
+    if (argc < 3)
     {
-        fprintf(stderr, "usage: <hostname> <port number>\n");
+        //fprintf(stderr, "usage: <hostname> <port number>\n");
+        //exit(1);
+        show_error();
+        exit(1);
+    }
+
+    if(argv[3] == NULL){
+        show_error();
         exit(1);
     }
     
+	if (strcmp(argv[1], "--help") == 0){
+		show_error();
+	}
+
+    if(argv[2] == NULL){
+        show_error();
+        exit(1);
+    }
+	
     int port = atoi(argv[2]);
+    //int flag = 0;
+
 
     if ((he = gethostbyname(argv[1])) == NULL)
     { /* get the host info */
-        herror("gethostbyname");
+        show_error();
+        //fprintf(stderr, "Could not connect with port %d\n", port);
+        perror("wrong");
         exit(1);
     }
 
+    if(strcmp(argv[1], "localhost") < 0){
+        fprintf(stderr, "Could not connect with port %d\n", port);
+        exit(1);
+    }
+    
+
+	/* generate the socket */
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
     {
+        show_error();
         perror("socket");
         exit(1);
     }
@@ -50,20 +84,58 @@ int main(int argc, char *argv[])
                 sizeof(struct sockaddr)) == -1)
     {
         perror("connect");
+        fprintf(stderr, "Could not connect with port %d\n", port);
         exit(1);
     }
 
-    if ((numbytes = recv(sockfd, buf, MAXDATASIZE, 0)) == -1)
-    {
-        perror("recv");
-        exit(1);
-    }
+    // if ((numbytes = recv(sockfd, buf, MAXDATASIZE, 0)) == -1)
+    // {
+    //     perror("recv");
+    //     exit(1);
+    // }
+    // //printf("%d\n",numbytes);
+    
+    // buf[numbytes] = '\0';
+    
+	char * send_value = "";
+	//int * sending_size = 0;
 
-    buf[numbytes] = '\0';
+    //printf("Received: %s\n", buf);
+    
+    int size_of_length = 0;
+		
+	for(int i=3; i< argc; i++){
+			size_of_length+=strlen(argv[i]);
+			if(argc > i+1){
+				
+				size_of_length++;
+			}
+	}
+		
+		//printf("%d\n",size_of_length);
+		
+		send_value = malloc(size_of_length);
+		send_value[0] = '\0';
+		//sending_size = malloc(size_of_length);
+		//sending_size = '\0';
+		
+		for(int i = 3; i < argc; i++){
 
-    printf("Received: %s", buf);
+			strcat(send_value, argv[i]);
+			if(argc > i+1)
+			{
+				strcat(send_value, " ");
+			}
+						
+			
+		}
+			
+		if (send(sockfd, send_value , (size_t)&size_of_length, 0) == -1){
+			perror("send");
+				
+			exit(0);
+		}
 
-    close(sockfd);
-
+//arguments.split(" ");
     return 0;
 }
