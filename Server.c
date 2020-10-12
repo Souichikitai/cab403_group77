@@ -111,6 +111,8 @@ int main(int argc, char *argv[])
 		sin_size = sizeof(struct sockaddr_in);
 		if ((new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size)) != -1)
 		{
+			    printf("%s - connection received from %s\n", whattime(),
+    			inet_ntoa(their_addr.sin_addr));
 			
 			// pthread_t t;
 			// //pthread_t t1;
@@ -121,7 +123,9 @@ int main(int argc, char *argv[])
 
 			int *pclient = malloc(sizeof(int));
 			*pclient = new_fd;
+			pthread_mutex_lock(&mutex);
 			append_que(pclient);
+			pthread_mutex_unlock(&mutex);
 
 
 			//continue;
@@ -154,7 +158,12 @@ char * whattime(){
 
 void *thread_controller(void *arg){
 	while(1){
-		int *pclient = remove_que();
+		
+		int *pclient;
+		pthread_mutex_unlock(&mutex);
+		pclient = remove_que();
+		pthread_mutex_unlock(&mutex);
+
 		if(pclient != NULL){
 			connection_handler(pclient);
 		}
@@ -175,8 +184,10 @@ void* connection_handler(void *p_thread_client_socket){
 
         
     //Print time and connection messages        
-    printf("%s - connection received from %s\n", whattime(),
-    inet_ntoa(their_addr.sin_addr));
+    // printf("%s - connection received from %s\n", whattime(),
+    // inet_ntoa(their_addr.sin_addr));
+
+
         /*    
         if ((servnumbyte = recv(sockfd, buf, MAXDATASIZE, 0)) == -1)
         {

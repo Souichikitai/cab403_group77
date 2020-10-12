@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 	fflush(stdout);
 	
 
-	sleep(1);
+	sleep(7);
 
 	fprintf(stderr, "stdderr wrriten\n");
 
