@@ -88,9 +88,9 @@ int main(int argc, char *argv[])
     printf("server starts listening ...\n");
 
 	/*Initializing 5 threads*/
-	// for(int i =0; i < THREADS_NUM; i++){
-	// 	pthread_create(&thread_pool[i], NULL, thread_controller, &sockfd);
-	// }
+	for(int i =0; i < THREADS_NUM; i++){
+		pthread_create(&thread_pool[i], NULL, thread_controller, &sockfd);
+	}
 
 
     /* repeat: accept, send, close the connection */
@@ -112,12 +112,18 @@ int main(int argc, char *argv[])
 		if ((new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size)) != -1)
 		{
 			
-			pthread_t t;
-			//pthread_t t1;
+			// pthread_t t;
+			// //pthread_t t1;
+			// int *pclient = malloc(sizeof(int));
+			// *pclient = sockfd;
+			// //connection_handler(pclient);         
+			// pthread_create(&t, NULL, connection_handler, NULL);
+
 			int *pclient = malloc(sizeof(int));
-			*pclient = sockfd;
-			//connection_handler(pclient);         
-			pthread_create(&t, NULL, connection_handler, NULL);
+			*pclient = new_fd;
+			append_que(pclient);
+
+
 			//continue;
 		}else{
 			perror("accept");
