@@ -64,6 +64,15 @@ int main(int argc, char *argv[])
         exit(1);
     }
     
+    if(isalpha(argv[2])){
+	show_error();
+        exit(1);
+    }
+
+    if((strcmp(argv[5], "-o") == 0)||(strcmp(argv[7], "-o") == 0)||(strcmp(argv[7], "-log") == 0)){
+        show_error();
+        exit(1);
+    }
 
 	/* generate the socket */
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
