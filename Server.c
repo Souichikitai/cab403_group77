@@ -32,7 +32,7 @@ struct sockaddr_in their_addr; /* connector's address information */
 socklen_t sin_size;
 
 char buf[MAXDATASIZE];
-void* connection_handler(void *client_socket);
+void* connection_handler(int *client_socket);
 char * whattime();
 void *thread_controller(void *arg);
 
@@ -91,6 +91,8 @@ int main(int argc, char *argv[])
 	for(int i =0; i < THREADS_NUM; i++){
 		pthread_create(&thread_pool[i], NULL, thread_controller, &sockfd);
 	}
+
+
 
 
     /* repeat: accept, send, close the connection */
@@ -170,7 +172,7 @@ void *thread_controller(void *arg){
 	}
 }
 
-void* connection_handler(void *p_thread_client_socket){
+void* connection_handler(int *p_thread_client_socket){
 
 	//int client_socket = *((int*)p_thread_client_socket);
 	//free(p_thread_client_socket);
@@ -203,9 +205,10 @@ void* connection_handler(void *p_thread_client_socket){
     //         perror("send");
     //     	close(new_fd);
     //         exit(0);
-    // }   
+    // }
+	int fd = *p_thread_client_socket; 
         
-	if ((servnumbyte = recv(new_fd, buf, MAXDATASIZE, 0)) == -1)
+	if ((servnumbyte = recv(fd, buf, MAXDATASIZE, 0)) == -1)
     {
         perror("recv");
         //exit(1);       	
@@ -419,7 +422,7 @@ void* connection_handler(void *p_thread_client_socket){
 			}
 			
 		}		
-        close(new_fd); /* parent doesn't need this */
+        close(fd); /* parent doesn't need this */
 
         while (waitpid(-1, NULL, WNOHANG) > 0)
             ;  /*clean up child processes*/ 
