@@ -16,12 +16,12 @@ int main(int argc, char *argv[])
 	fflush(stdout);
 	
 
-	sleep(7);
+	sleep(1);
 
 	fprintf(stderr, "stdderr wrriten\n");
 
 	printf("This message is sent to stdout. In three seconds I will terminate with a status code 5\n");
 
-	sleep(3);
+	sleep(1);
     return 5;
 }
