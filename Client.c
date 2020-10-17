@@ -8,7 +8,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <time.h>
-
+#include <ctype.h>
 
 #define MAXDATASIZE 100 /* max number of bytes we can get at once */
 
@@ -63,6 +63,15 @@ int main(int argc, char *argv[])
         fprintf(stderr, "Could not connect with port %d\n", port);
         exit(1);
     }
+
+    //if(isalpha(argv[2])){
+        //show_error();
+        //exit(1);
+    //}
+    //if((strcmp(argv[5], "-o")==0)||(strcmp(argv[7], "-o")==0)||(strcmp(argv[7], "-log")==0)){
+        //show_error();
+        //exit(1);
+    //}
     
 
 	/* generate the socket */
