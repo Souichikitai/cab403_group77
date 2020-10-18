@@ -285,13 +285,13 @@ void* connection_handler(int *p_thread_client_socket){
 	if(o_state == 1){
 		printf("We need o\n");
 	}
-		if(t_state == 1){
-			printf("We need t\n");
-		}
+	if(t_state == 1){
+		printf("We need t\n");
+	}
 			   	
         /*crate a new fork */
 		pid_t pid;
-		pid_t pid2;
+		
 		pid = fork();
 		int value = 0;
 		
@@ -301,10 +301,6 @@ void* connection_handler(int *p_thread_client_socket){
 		/* this is the child process */
 		if(pid == 0){
 			
-			
-		
-			
-
 			if(!log_state){
 				if(counter >= 4){
 					printf("%s - attempting to execute %s: %s\n", whattime(), arrray[excuted_file_index], arrray[excuted_file_index+1]);
@@ -387,21 +383,23 @@ void* connection_handler(int *p_thread_client_socket){
 		if(pid > 0){						
 			//printf("here1   %d    \n", o_state);
 			int status;
+			pid_t pid2;
 			pid2 = fork();
 
 			if(pid2 < 0){
 				perror("failed fork");
 			}
-			//child process
-			//NOT WORK
-			if(pid2 == 0){
+			//parent process
+			if(pid2 > 0){
+
 				if(waitpid(pid, &status, 0)==-1){
-				perror("waitpid failed");
+					 perror("waitpid failed");
 				}
 				if(!log_state){
 				//printf("%s - %s %s has been executed with pid %d\n", buffer, arrray[excuted_file_index], arrray[excuted_file_index+1], pid);
 					if(WIFEXITED(status)){
 					//flags = 0;
+					// printf("		Test\n");
 						waitflag = 1;
 						const int es = WEXITSTATUS(status);
 						printf("%s - %d has terminated with status code %d\n", whattime(), getpid(), es);
@@ -439,14 +437,24 @@ void* connection_handler(int *p_thread_client_socket){
 					close(saved_stdout);
 				
 				}
+				kill(pid2, SIGKILL);			
 			}
-			//parent process
-			if(pid2 > 0){
+			//child process
+			//NOT WORK
+			if(pid2 == 0){
 				sleep(10);
+				//kill(pid2, SIGKILL);
+
+				raise(SIGTERM);
+					// printf("%s - sent SIGTERM to %d\n", whattime(), pid2);
+					// printf("%s - %d has terminated with status code 0\n", whattime(), pid2);
+				
 				if(!waitflag){
-					raise(SIGTERM);
-				}				
+					// raise(SIGTERM);
+				}
+				// kill(pid2, SIGKILL);
 			}
+
 			//flags = 1;
 			
 			// int flags = 0;
