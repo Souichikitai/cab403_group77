@@ -144,7 +144,7 @@ int main(int argc, char *argv[])
 				
 			exit(0);
 		}
-
+    free(send_value);
 //arguments.split(" ");
     return 0;
 }

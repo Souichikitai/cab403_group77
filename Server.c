@@ -38,9 +38,10 @@ char * whattime();
 void *thread_controller(void *arg);
 void kill_child(int signum);
 void Kill_All(int sig);
-int sleeptimes = 10;
+void kill_child_die(int sig);
+int sleeptimes;
 int waitflag;
-
+pid_t pidc;
 /*#define MYPORT 54321 the port users will be connecting to */
 //static int flags=0;
 
@@ -112,7 +113,7 @@ int main(int argc, char *argv[])
 		// 	pthread_join(thread_pool[i], NULL);
 		// }
 		signal(SIGTERM, kill_child);
-		
+		signal(SIGKILL, kill_child_die);
 
 		sin_size = sizeof(struct sockaddr_in);
 		if ((new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size)) != -1)
@@ -187,8 +188,9 @@ void kill_child(int signum){
 	//if(flags == 1){
 		//printf("%d\n", pids);
 		//kill(pids, SIGKILL);
-	printf("%s - sent SIGTERM to %d\n", whattime(), getpid());
-	printf("%s - %d has terminated with status code 0\n", whattime(), getpid());
+	printf("%s - sent SIGTERM to %d\n", whattime(), pidc);
+	printf("%s - %d has terminated with status code 0\n", whattime(), pidc);
+	
 	//sleep(5);
 	//if(){
 		//kill(pid, SIGKILL);
@@ -200,7 +202,10 @@ void kill_child(int signum){
 	//printf("%s - %d has terminated with status code 0\n", whattime(), pids);
 	//return 0;
 }
-
+void kill_child_die(int sig){
+	printf("%s - sent SIGTERM to %d\n", whattime(), pidc);
+	printf("%s - sent SIGKILL to %d\n", whattime(), pidc);
+}
 void Kill_All(int sig) {
 	//free(buf);
 	//free(thread_pool);
@@ -246,7 +251,7 @@ void* connection_handler(int *p_thread_client_socket){
 
 	int log_location = 0;
 	int o_location = 0;
-	//int t_location = 0;
+	int t_location = 0;
 		
     while(token != NULL){
 		arrray[counter] = token;
@@ -272,7 +277,7 @@ void* connection_handler(int *p_thread_client_socket){
 		if(strcmp(arrray[i], "-t") == 0){
 			t_state = 1;
 			t_index += 2 + log_index;
-			//t_location = i;
+			t_location = i;
 			excuted_file_index+=2;
 		}
 	}
@@ -293,6 +298,7 @@ void* connection_handler(int *p_thread_client_socket){
 		pid_t pid;
 		
 		pid = fork();
+		pidc = pid;
 		int value = 0;
 		
 		if(pid < 0){
@@ -300,14 +306,16 @@ void* connection_handler(int *p_thread_client_socket){
 		}
 		/* this is the child process */
 		if(pid == 0){
-			
+			printf("child pid: %d\n", pid);
+			printf("child getppid: %d\n", getppid());
+			printf("child getpid: %d\n", getpid());
 			if(!log_state){
 				if(counter >= 4){
 					printf("%s - attempting to execute %s: %s\n", whattime(), arrray[excuted_file_index], arrray[excuted_file_index+1]);
 				}else{
 					printf("%s - attempting to execute %s\n", whattime(), arrray[excuted_file_index]);
 				}		
-				printf("%s - %s %s has been executed with pid %d\n", whattime(), arrray[excuted_file_index], arrray[excuted_file_index+1], getppid());
+				printf("%s - %s %s has been executed with pid %d\n", whattime(), arrray[excuted_file_index], arrray[excuted_file_index+1], getpid());
 			}
 			if(log_state){
 				int saved_stdout = dup(1);
@@ -322,7 +330,7 @@ void* connection_handler(int *p_thread_client_socket){
 				}else{
 					printf("%s - attempting to execute %s\n", whattime(), arrray[excuted_file_index]);
 				}	
-				printf("%s - %s %s has been executed with pid %d\n", whattime(), arrray[excuted_file_index], arrray[excuted_file_index+1], getppid());
+				printf("%s - %s %s has been executed with pid %d\n", whattime(), arrray[excuted_file_index], arrray[excuted_file_index+1], getpid());
 				close(file);
 				//redirect to terminal
 				dup2(saved_stdout, 1);
@@ -370,9 +378,7 @@ void* connection_handler(int *p_thread_client_socket){
 				close(saved_stdout_o);
 			
 			}
-			if(t_state){
-				
-			}
+			
 			
 			//printf("%s - %s %s has been executed with pid %d\n", buffer, arrray[excuted_file_index], arrray[excuted_file_index+1], pid);
 			/*close(value);
@@ -380,7 +386,11 @@ void* connection_handler(int *p_thread_client_socket){
 			//exit(1);	
 		}
 		/*parent*/
-		if(pid > 0){						
+		if(pid > 0){
+			printf("parent pid: %d\n", pid);
+			printf("parent getppid: %d\n", getppid());
+			printf("parent getpid: %d\n", getpid());
+
 			//printf("here1   %d    \n", o_state);
 			int status;
 			pid_t pid2;
@@ -402,7 +412,7 @@ void* connection_handler(int *p_thread_client_socket){
 					// printf("		Test\n");
 						waitflag = 1;
 						const int es = WEXITSTATUS(status);
-						printf("%s - %d has terminated with status code %d\n", whattime(), getpid(), es);
+						printf("%s - %d has terminated with status code %d\n", whattime(), pid, es);
 						
 					}								
 				}
@@ -427,7 +437,7 @@ void* connection_handler(int *p_thread_client_socket){
 					if(WIFEXITED(status)){
 						const int es = WEXITSTATUS(status);
 						waitflag = 1;
-						printf("%s - %d has terminated with status code %d\n", whattime(), getpid(), es);	
+						printf("%s - %d has terminated with status code %d\n", whattime(), pid, es);	
 					}
 					log_state = 0;
 					close(file);
@@ -442,28 +452,28 @@ void* connection_handler(int *p_thread_client_socket){
 			//child process
 			//NOT WORK
 			if(pid2 == 0){
-				sleep(10);
-				//kill(pid2, SIGKILL);
-
-				raise(SIGTERM);
-					// printf("%s - sent SIGTERM to %d\n", whattime(), pid2);
-					// printf("%s - %d has terminated with status code 0\n", whattime(), pid2);
-				
-				if(!waitflag){
-					// raise(SIGTERM);
+				if(t_state){
+					sleeptimes = atoi(arrray[t_location+1]);
 				}
-				// kill(pid2, SIGKILL);
+				if(!t_state){
+					sleeptimes = 10;
+				}
+				sleep(sleeptimes);
+				//kill(pid2, SIGKILL);
+				raise(SIGTERM);
+				
+				sleep(5);
+
+				if((kill(pidc, SIGKILL))== -1){
+					printf("errer\n");
+				}else
+				{
+					// printf("Good\n");
+					//printf("%s - sent SIGTERM to %d\n", whattime(), pidc);
+				 	printf("%s - sent SIGKILL to %d\n", whattime(), pidc);
+				}
+				
 			}
-
-			//flags = 1;
-			
-			// int flags = 0;
-			//clock_t start_time = clock();
-			//printf("%ld\n", start_time);
-			//printf("%ld\n", start_time+10);
-			
-			
-
 			//printf("Hi run?\n");
 			while (waitpid(-1, NULL, WNOHANG) > 0)
             ;  /*clean up child processes*/ 
