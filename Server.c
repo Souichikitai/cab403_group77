@@ -38,7 +38,7 @@ char * whattime();
 void *thread_controller(void *arg);
 void kill_child(int signum);
 void Kill_All(int sig);
-void kill_child_die(int sig);
+// void kill_child_die(int sig);
 int sleeptimes;
 int waitflag;
 pid_t pidc;
@@ -113,7 +113,6 @@ int main(int argc, char *argv[])
 		// 	pthread_join(thread_pool[i], NULL);
 		// }
 		signal(SIGTERM, kill_child);
-		signal(SIGKILL, kill_child_die);
 
 		sin_size = sizeof(struct sockaddr_in);
 		if ((new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size)) != -1)
@@ -202,10 +201,7 @@ void kill_child(int signum){
 	//printf("%s - %d has terminated with status code 0\n", whattime(), pids);
 	//return 0;
 }
-void kill_child_die(int sig){
-	printf("%s - sent SIGTERM to %d\n", whattime(), pidc);
-	printf("%s - sent SIGKILL to %d\n", whattime(), pidc);
-}
+
 void Kill_All(int sig) {
 	//free(buf);
 	//free(thread_pool);
