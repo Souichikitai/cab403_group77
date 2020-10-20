@@ -26,6 +26,7 @@
 // pthread_t *thread_pool;
 pthread_t thread_pool[THREADS_NUM];
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 
 int sockfd, new_fd, servnumbyte;            /* listen on sock_fd, new connection on new_fd */
 
@@ -39,6 +40,7 @@ char * whattime();
 void *thread_controller(void *arg);
 void kill_child(int signum);
 void Kill_All(int sig);
+
 // void kill_child_die(int sig);
 int sleeptimes;
 int waitflag;
@@ -96,7 +98,7 @@ int main(int argc, char *argv[])
     
     printf("server starts listening ...\n");
 
-
+	
 
 	/*Initializing 5 threads*/
 	for(int i =0; i < THREADS_NUM; i++){
@@ -106,14 +108,14 @@ int main(int argc, char *argv[])
 	
 
 
-
+	
 	// pthread_detach(pthread_self());
-
+	
     /* repeat: accept, send, close the connection */
     /* for every accepted connection, use a sepetate process or thread to serve it */
     while (1)
     { /* main accept() loop */
-		signal(SIGINT, Kill_All);
+		
 		// pthread_mutex_lock(&mutex);
 		// append_que(&sockfd);
 		// pthread_mutex_unlock(&mutex);
@@ -122,6 +124,7 @@ int main(int argc, char *argv[])
 		// 	pthread_join(thread_pool[i], NULL);
 		// }
 		signal(SIGTERM, kill_child);
+		signal(SIGINT, Kill_All);
 
 		sin_size = sizeof(struct sockaddr_in);
 		if ((new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size)) != -1)
@@ -137,10 +140,17 @@ int main(int argc, char *argv[])
 			// pthread_create(&t, NULL, connection_handler, NULL);
 
 			int *pclient;
+			//int last_type;//
 			pclient = &new_fd;
+			//pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, &last_type);//
+			//pthread_cleanup_push((void(*)(void *))pthread_mutex_lock, (void *)&mutex);//
 			pthread_mutex_lock(&mutex);
 			append_que(pclient);
+			// pthread_join(thread_pool[0], NULL);
+			//pthread_cond_wait(&cond, &mutex);//
 			pthread_mutex_unlock(&mutex);
+			//pthread_setcanceltype(last_type, NULL);//
+			//pthread_cleanup_pop(0);//
 
 
 			//continue;
@@ -152,10 +162,12 @@ int main(int argc, char *argv[])
 		//pthread_create(&t1, NULL, connection_handler, pclient);
     }
 
-
+		// for(int i =0; i < THREADS_NUM; i++){
+		// 	pthread_join(thread_pool[i], NULL);
+		// }
 
 	// free(thread_pool);
-	pthread_exit(NULL);
+	// pthread_exit(NULL);
 	//free(sockfd);
 	close(sockfd);
 
@@ -216,24 +228,24 @@ void kill_child(int signum){
 	//return 0;
 }
 
+
 void Kill_All(int sig) {
 	//free(buf);
 	//free(thread_pool);
 
-		// for (int i = 0; i < THREADS_NUM; ++i) {
-      	//  	pthread_cancel(thread_pool[i]);
+		// for (int i = 0; i < THREADS_NUM; i++) {
+      	//  	pthread_kill(thread_pool[i]);
     	// }
-		// for(int i =0; i < THREADS_NUM; i++){
-		// 	if(pthread_cancel(thread_pool[i]) != 0){
-		// 		perror("Join failed");
-		// 	}
-		// }
 		
-		pthread_exit(0);
+		// printf("     %d      \n", THREADS_NUM);
 
+		for (int i = 0; i < THREADS_NUM; i++) {
+      	 	pthread_cancel(thread_pool[i]);
+			pthread_kill(thread_pool[i], SIGKILL);
+			pthread_join(thread_pool[i], NULL);
+    	}
 		printf("\n%s - recieved SIGINT\n", whattime());
 		printf("%s - Cleaning up and terminating...\n", whattime());
-
 		exit(1);
 		// return 0;
 	}
