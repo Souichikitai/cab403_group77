@@ -105,7 +105,8 @@ int main(int argc, char *argv[])
 		pthread_create(&thread_pool[i], NULL, thread_controller, &sockfd);
 	}
 
-	
+		signal(SIGTERM, kill_child);
+		signal(SIGINT, Kill_All);
 
 
 	
@@ -123,8 +124,7 @@ int main(int argc, char *argv[])
 		// for(int i =0; i < THREADS_NUM; i++){
 		// 	pthread_join(thread_pool[i], NULL);
 		// }
-		signal(SIGTERM, kill_child);
-		signal(SIGINT, Kill_All);
+
 
 		sin_size = sizeof(struct sockaddr_in);
 		if ((new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size)) != -1)
@@ -213,8 +213,7 @@ void kill_child(int signum){
 	//if(flags == 1){
 		//printf("%d\n", pids);
 		//kill(pids, SIGKILL);
-	printf("%s - sent SIGTERM to %d\n", whattime(), pidc);
-	printf("%s - %d has terminated with status code 0\n", whattime(), pidc);
+
 	
 	//sleep(5);
 	//if(){
@@ -238,14 +237,15 @@ void Kill_All(int sig) {
     	// }
 		
 		// printf("     %d      \n", THREADS_NUM);
+		printf("\n%s - recieved SIGINT\n", whattime());
+		printf("%s - Cleaning up and terminating...\n", whattime());
 
 		for (int i = 0; i < THREADS_NUM; i++) {
       	 	pthread_cancel(thread_pool[i]);
 			pthread_kill(thread_pool[i], SIGKILL);
 			pthread_join(thread_pool[i], NULL);
     	}
-		printf("\n%s - recieved SIGINT\n", whattime());
-		printf("%s - Cleaning up and terminating...\n", whattime());
+
 		exit(1);
 		// return 0;
 	}
@@ -493,10 +493,19 @@ void* connection_handler(int *p_thread_client_socket){
 					sleeptimes = 10;
 				}
 				sleep(sleeptimes);
-				//kill(pid2, SIGKILL);
-				raise(SIGTERM);
+				if((kill(pid2, SIGTERM)) == -1){
+					printf("error\n");
+				}else
+				{
+					/* code */
+						printf("%s - sent SIGTERM to %d\n", whattime(), pid2);
+						printf("%s - %d has terminated with status code 0\n", whattime(), pidc);
+				}
 				
+				// raise(SIGTERM);
+				printf("Hello324rfewf");
 				sleep(5);
+				printf("Hello");
 
 				if((kill(pidc, SIGKILL))== -1){
 					printf("errer\n");
@@ -504,7 +513,7 @@ void* connection_handler(int *p_thread_client_socket){
 				{
 					// printf("Good\n");
 					//printf("%s - sent SIGTERM to %d\n", whattime(), pidc);
-				 	printf("%s - sent SIGKILL to %d\n", whattime(), pidc);
+				 	printf("%s - sent SIGKILL to %d\n", whattime(), pid2);
 				}
 				
 			}
