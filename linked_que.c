@@ -20,7 +20,7 @@ void append_que(int *csocket){
     }
     tail = node_new;
     counter++;
-    printf("         %d            \n", counter);
+    // printf("         %d            \n", counter);
 }
 
 int* remove_que(){
@@ -38,5 +38,5 @@ int* remove_que(){
         return result;
     }
 
-    printf("         %d            \n", counter);
+    // printf("         %d            \n", counter);
 }

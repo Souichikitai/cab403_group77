@@ -23,6 +23,7 @@
 #define MAXDATASIZE 256 /* max number of bytes we can get at once */
 #define THREADS_NUM 5
 
+// pthread_t *thread_pool;
 pthread_t thread_pool[THREADS_NUM];
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -41,13 +42,16 @@ void Kill_All(int sig);
 // void kill_child_die(int sig);
 int sleeptimes;
 int waitflag;
+void *thread_status;
+
+
 pid_t pidc;
 /*#define MYPORT 54321 the port users will be connecting to */
 //static int flags=0;
 
 int main(int argc, char *argv[])
 {
-    
+    // thread_pool = (pthread_t *)malloc(THREADS_NUM*sizeof(thread_pool));
     /* generate the socket */
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
     {
@@ -92,13 +96,18 @@ int main(int argc, char *argv[])
     
     printf("server starts listening ...\n");
 
+
+
 	/*Initializing 5 threads*/
 	for(int i =0; i < THREADS_NUM; i++){
 		pthread_create(&thread_pool[i], NULL, thread_controller, &sockfd);
 	}
 
+	
 
 
+
+	// pthread_detach(pthread_self());
 
     /* repeat: accept, send, close the connection */
     /* for every accepted connection, use a sepetate process or thread to serve it */
@@ -127,8 +136,8 @@ int main(int argc, char *argv[])
 			// //connection_handler(pclient);         
 			// pthread_create(&t, NULL, connection_handler, NULL);
 
-			int *pclient = malloc(sizeof(int));
-			*pclient = new_fd;
+			int *pclient;
+			pclient = &new_fd;
 			pthread_mutex_lock(&mutex);
 			append_que(pclient);
 			pthread_mutex_unlock(&mutex);
@@ -139,9 +148,14 @@ int main(int argc, char *argv[])
 			perror("accept");
 		}
 
+
 		//pthread_create(&t1, NULL, connection_handler, pclient);
     }
 
+
+
+	// free(thread_pool);
+	pthread_exit(NULL);
 	//free(sockfd);
 	close(sockfd);
 
@@ -206,8 +220,20 @@ void Kill_All(int sig) {
 	//free(buf);
 	//free(thread_pool);
 
+		// for (int i = 0; i < THREADS_NUM; ++i) {
+      	//  	pthread_cancel(thread_pool[i]);
+    	// }
+		// for(int i =0; i < THREADS_NUM; i++){
+		// 	if(pthread_cancel(thread_pool[i]) != 0){
+		// 		perror("Join failed");
+		// 	}
+		// }
+		
+		pthread_exit(0);
+
 		printf("\n%s - recieved SIGINT\n", whattime());
 		printf("%s - Cleaning up and terminating...\n", whattime());
+
 		exit(1);
 		// return 0;
 	}
@@ -302,9 +328,9 @@ void* connection_handler(int *p_thread_client_socket){
 		}
 		/* this is the child process */
 		if(pid == 0){
-			printf("child pid: %d\n", pid);
-			printf("child getppid: %d\n", getppid());
-			printf("child getpid: %d\n", getpid());
+			// printf("child pid: %d\n", pid);
+			// printf("child getppid: %d\n", getppid());
+			// printf("child getpid: %d\n", getpid());
 			if(!log_state){
 				if(counter >= 4){
 					printf("%s - attempting to execute %s: %s\n", whattime(), arrray[excuted_file_index], arrray[excuted_file_index+1]);
@@ -383,9 +409,9 @@ void* connection_handler(int *p_thread_client_socket){
 		}
 		/*parent*/
 		if(pid > 0){
-			printf("parent pid: %d\n", pid);
-			printf("parent getppid: %d\n", getppid());
-			printf("parent getpid: %d\n", getpid());
+			// printf("parent pid: %d\n", pid);
+			// printf("parent getppid: %d\n", getppid());
+			// printf("parent getpid: %d\n", getpid());
 
 			//printf("here1   %d    \n", o_state);
 			int status;
@@ -478,6 +504,8 @@ void* connection_handler(int *p_thread_client_socket){
 			
 		}		
         close(fd); /* parent doesn't need this */
+
+		
 
         while (waitpid(-1, NULL, WNOHANG) > 0)
             ;  /*clean up child processes*/ 
