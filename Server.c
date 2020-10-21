@@ -358,7 +358,7 @@ void* connection_handler(int *p_thread_client_socket){
 					}else {
 						printf("%s - could not execute %s\n", whattime(), arrray[excuted_file_index]);
 					}
-					
+					kill(getpid(), SIGKILL);
 					//continue;
 					
 				}
@@ -378,6 +378,7 @@ void* connection_handler(int *p_thread_client_socket){
 				value = execlp(arrray[excuted_file_index], arrray[excuted_file_index+1], NULL);
 				if(value == -1){
 					perror("execlp failed");
+					
 				}
 
 				close(file1);
@@ -385,6 +386,9 @@ void* connection_handler(int *p_thread_client_socket){
 				//redirect to terminal
 				dup2(saved_stdout_o, 1);
 				close(saved_stdout_o);
+				if(value == -1){
+					kill(getpid(), SIGKILL);
+				}
 			
 			}
 			
