@@ -18,6 +18,7 @@
 #include <pthread.h>
 #include <signal.h>
 #include "linked_que.h"
+//#include <linux/module.h>
 
 #define BACKLOG 10 /* how many pending connections queue will hold */
 #define MAXDATASIZE 256 /* max number of bytes we can get at once */
@@ -243,18 +244,18 @@ void* connection_handler(int *p_thread_client_socket){
 
 	int counter = 0;
 
-log_state = 0;
-o_state = 0;
-t_state = 0;
+	log_state = 0;
+	o_state = 0;
+	t_state = 0;
 
-log_index = 0;
-o_index = 0;
-t_index = 0;
-excuted_file_index = 0;
+	log_index = 0;
+	o_index = 0;
+	t_index = 0;
+	excuted_file_index = 0;
 
-log_location = 0;
-o_location = 0;
-t_location = 0;
+	log_location = 0;
+	o_location = 0;
+	t_location = 0;
 	
 		
     while(token != NULL){
@@ -287,7 +288,7 @@ t_location = 0;
 	}
 	
 	arrray_log = arrray[log_location+1];
-        
+    
     //print out which file currently attempting with given arguments
 	if(log_state == 1){
 		printf("We need log\n");
@@ -298,6 +299,9 @@ t_location = 0;
 	if(t_state == 1){
 		printf("We need t\n");
 	}
+
+	if(strcmp(arrray[0], "mem")!=0){
+		
 			   	
         /*crate a new fork */
 		pid_t pid;
@@ -508,14 +512,17 @@ t_location = 0;
 			
 			
 		}		
-        close(fd); /* parent doesn't need this */
+        
 
 		
 
         while (waitpid(-1, NULL, WNOHANG) > 0)
             ;  /*clean up child processes*/ 
 		
-		return 0;
+		
+	}
+	close(fd); /* parent doesn't need this */
+	return 0;
 }
 
 void kill_child(int signum){
