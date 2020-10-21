@@ -46,6 +46,21 @@ int sleeptimes;
 int waitflag;
 void *thread_status;
 
+char *arrray_log;
+
+int log_state;
+int o_state;
+int t_state;
+
+int log_index;
+int o_index;
+int t_index;
+int excuted_file_index;
+
+int log_location;
+int o_location;
+int t_location;
+
 
 pid_t pidc;
 /*#define MYPORT 54321 the port users will be connecting to */
@@ -105,12 +120,12 @@ int main(int argc, char *argv[])
 		pthread_create(&thread_pool[i], NULL, thread_controller, &sockfd);
 	}
 
-		signal(SIGTERM, kill_child);
-		signal(SIGINT, Kill_All);
+	signal(SIGTERM, kill_child);
+	signal(SIGINT, Kill_All);
 
 
 	
-	// pthread_detach(pthread_self());
+	
 	
     /* repeat: accept, send, close the connection */
     /* for every accepted connection, use a sepetate process or thread to serve it */
@@ -203,52 +218,7 @@ void *thread_controller(void *arg){
 	}
 }
 
-void kill_child(int signum){
-	// clock_t start_time = clock();
-	// if(((clock()- start_time)/CLOCKS_PER_SEC) == 10){
-	// kill(pid, SIGTERM);
-	// 	printf("Time up\n");
-	// }
-	//printf("Kill flags is %d\n", flags);
-	//if(flags == 1){
-		//printf("%d\n", pids);
-		//kill(pids, SIGKILL);
 
-	
-	//sleep(5);
-	//if(){
-		//kill(pid, SIGKILL);
-	//}
-	//}
-	//printf("%d\n", pids);
-	//kill(pids, SIGCONT);
-	//printf("%s - sent SIGTERM to %d\n", whattime(), pids);
-	//printf("%s - %d has terminated with status code 0\n", whattime(), pids);
-	//return 0;
-}
-
-
-void Kill_All(int sig) {
-	//free(buf);
-	//free(thread_pool);
-
-		// for (int i = 0; i < THREADS_NUM; i++) {
-      	//  	pthread_kill(thread_pool[i]);
-    	// }
-		
-		// printf("     %d      \n", THREADS_NUM);
-		printf("\n%s - recieved SIGINT\n", whattime());
-		printf("%s - Cleaning up and terminating...\n", whattime());
-
-		for (int i = 0; i < THREADS_NUM; i++) {
-      	 	pthread_cancel(thread_pool[i]);
-			pthread_kill(thread_pool[i], SIGKILL);
-			pthread_join(thread_pool[i], NULL);
-    	}
-
-		exit(1);
-		// return 0;
-	}
 
 void* connection_handler(int *p_thread_client_socket){
 
@@ -264,7 +234,6 @@ void* connection_handler(int *p_thread_client_socket){
 	    
 	    
     buf[servnumbyte] = '\0';
-    //printf("Recieved: %s\n",buf);
         
     char indent[] = " ";
 	char *token = strtok(buf, indent);
@@ -274,18 +243,19 @@ void* connection_handler(int *p_thread_client_socket){
 
 	int counter = 0;
 
-	int log_state = 0;
-	int o_state = 0;
-	int t_state = 0;
+log_state = 0;
+o_state = 0;
+t_state = 0;
 
-	int log_index = 0;
-	int o_index = 0;
-	int t_index = 0;
-	int excuted_file_index = 0;
+log_index = 0;
+o_index = 0;
+t_index = 0;
+excuted_file_index = 0;
 
-	int log_location = 0;
-	int o_location = 0;
-	int t_location = 0;
+log_location = 0;
+o_location = 0;
+t_location = 0;
+	
 		
     while(token != NULL){
 		arrray[counter] = token;
@@ -315,7 +285,8 @@ void* connection_handler(int *p_thread_client_socket){
 			excuted_file_index+=2;
 		}
 	}
-		
+	
+	arrray_log = arrray[log_location+1];
         
     //print out which file currently attempting with given arguments
 	if(log_state == 1){
@@ -429,6 +400,7 @@ void* connection_handler(int *p_thread_client_socket){
 			int status;
 			pid_t pid2;
 			pid2 = fork();
+			
 
 			if(pid2 < 0){
 				perror("failed fork");
@@ -450,10 +422,6 @@ void* connection_handler(int *p_thread_client_socket){
 						
 					}								
 				}
-				//printf("%d\n", flags);
-				//printf("%s - %s %s has been executed with pid %d\n", buffer, arrray[excuted_file_index], arrray[excuted_file_index+1], pid);
-			
-				//wait(NULL);
 
 				if(log_state == 1){	
 
@@ -493,27 +461,43 @@ void* connection_handler(int *p_thread_client_socket){
 					sleeptimes = 10;
 				}
 				sleep(sleeptimes);
-				if((kill(pid2, SIGTERM)) == -1){
+				if((kill(getppid(), SIGTERM)) == -1){
 					printf("error\n");
-				}else
+				}else if((kill(getppid(), SIGTERM)) == 0)
 				{
-					/* code */
-						printf("%s - sent SIGTERM to %d\n", whattime(), pid2);
-						printf("%s - %d has terminated with status code 0\n", whattime(), pidc);
+					//raise(SIGTERM);
+					//printf("%s - sent SIGTERM to %d\n", whattime(), pidc);
+					//printf("%s - %d has terminated with status code 0\n", whattime(), pidc);
+
 				}
 				
-				// raise(SIGTERM);
-				printf("Hello324rfewf");
+				
+				printf("Hello324rfewf\n");
 				sleep(5);
-				printf("Hello");
+				printf("Hello\n");
 
-				if((kill(pidc, SIGKILL))== -1){
-					printf("errer\n");
-				}else
+				if((kill(pid, SIGKILL))== -1){
+					printf("error\n");
+				}else if((kill(pid, SIGKILL))== 0)
 				{
-					// printf("Good\n");
-					//printf("%s - sent SIGTERM to %d\n", whattime(), pidc);
-				 	printf("%s - sent SIGKILL to %d\n", whattime(), pid2);
+					if(!log_state){
+						printf("%s - sent SIGKILL to %d\n", whattime(), pid);
+					}
+					if(log_state){
+						int saved_stdout = dup(1);
+						int file = open(arrray_log, O_WRONLY | O_CREAT | O_APPEND, 0777);				
+						if(file == -1){
+							perror("Failed");
+							//return 2;
+						}								
+						dup2(file, 1);
+						printf("%s - sent SIGKILL to %d\n", whattime(), pid);
+						close(file);
+						//redirect to terminal
+						dup2(saved_stdout, 1);
+						close(saved_stdout);
+					}
+				 	
 				}
 				
 			}
@@ -532,4 +516,59 @@ void* connection_handler(int *p_thread_client_socket){
             ;  /*clean up child processes*/ 
 		
 		return 0;
+}
+
+void kill_child(int signum){
+	if(!log_state){
+		printf("%s - sent SIGTERM to %d\n", whattime(), pidc);
+		printf("%s - %d has terminated with status code 0\n", whattime(), pidc);
+	}
+	if(log_state){
+		int saved_stdout = dup(1);
+		int file = open(arrray_log, O_WRONLY | O_CREAT | O_APPEND, 0777);				
+		if(file == -1){
+			perror("Failed");
+			//return 2;
+		}								
+		dup2(file, 1);
+		printf("%s - sent SIGTERM to %d\n", whattime(), pidc);
+		printf("%s - %d has terminated with status code 0\n", whattime(), pidc);
+		close(file);
+		//redirect to terminal
+		dup2(saved_stdout, 1);
+		close(saved_stdout);
+	}
+	
+}
+
+
+void Kill_All(int sig) {
+	if(!log_state){
+		printf("\n%s - recieved SIGINT\n", whattime());
+		printf("%s - Cleaning up and terminating...\n", whattime());
+	}
+	if(log_state){
+		int saved_stdout = dup(1);
+		int file = open(arrray_log, O_WRONLY | O_CREAT | O_APPEND, 0777);				
+		if(file == -1){
+			perror("Failed");
+			//return 2;
+		}								
+		dup2(file, 1);
+		printf("\n%s - recieved SIGINT\n", whattime());
+		printf("%s - Cleaning up and terminating...\n", whattime());
+		close(file);
+		//redirect to terminal
+		dup2(saved_stdout, 1);
+		close(saved_stdout);
+	}
+	
+	for (int i = 0; i < THREADS_NUM; i++) {
+		pthread_cancel(thread_pool[i]);
+		pthread_kill(thread_pool[i], SIGKILL);
+		pthread_join(thread_pool[i], NULL);
+	}
+
+	exit(1);
+	// return 0;
 }

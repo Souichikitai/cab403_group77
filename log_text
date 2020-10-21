@@ -243,3 +243,19 @@ This message is sent to stdout. In three seconds I will terminate with a status 
 2020-10-20 14:47:24 - /home/cab403/cab403_groupfdsfa77/test hello has been executed with pid 11551
 2020-10-20 14:48:38 - attempting to execute /home/cab403/cab403_groupfdsfa77/test: hello
 2020-10-20 14:48:38 - /home/cab403/cab403_groupfdsfa77/test hello has been executed with pid 11592
+2020-10-21 14:18:08 - attempting to execute /home/cab403/cab403_group77/sleeper
+2020-10-21 14:18:08 - /home/cab403/cab403_group77/sleeper (null) has been executed with pid 12150
+2020-10-21 14:33:31 - attempting to execute /home/cab403/cab403_group77/sleeper
+2020-10-21 14:33:31 - /home/cab403/cab403_group77/sleeper (null) has been executed with pid 12958
+2020-10-21 14:33:41 - sent SIGTERM to 12958
+2020-10-21 14:33:41 - 12958 has terminated with status code 0
+2020-10-21 14:37:27 - attempting to execute /home/cab403/cab403_group77/sleeper
+2020-10-21 14:37:27 - /home/cab403/cab403_group77/sleeper (null) has been executed with pid 13180
+2020-10-21 14:37:37 - sent SIGTERM to 13180
+2020-10-21 14:37:37 - 13180 has terminated with status code 0
+2020-10-21 14:37:42 - sent SIGKILL to 13180
+2020-10-21 14:38:42 - attempting to execute /home/cab403/cab403_group77/sleeper: (null)
+2020-10-21 14:38:42 - /home/cab403/cab403_group77/sleeper (null) has been executed with pid 13215
+2020-10-21 14:38:47 - sent SIGTERM to 13215
+2020-10-21 14:38:47 - 13215 has terminated with status code 0
+2020-10-21 14:38:52 - sent SIGKILL to 13215
