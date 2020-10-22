@@ -20,8 +20,8 @@ static void show_error(){
 int main(int argc, char *argv[])
 {
     int sockfd;
-    //int numbytes;
-    //char buf[MAXDATASIZE];
+    int numbytes;
+    char buf[MAXDATASIZE];
     struct hostent *he;
     struct sockaddr_in their_addr; 
 
@@ -97,19 +97,11 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    // if ((numbytes = recv(sockfd, buf, MAXDATASIZE, 0)) == -1)
-    // {
-    //     perror("recv");
-    //     exit(1);
-    // }
-    // //printf("%d\n",numbytes);
-    
-    // buf[numbytes] = '\0';
+
     
 	char * send_value = "";
 	//int * sending_size = 0;
 
-    //printf("Received: %s\n", buf);
     
     int size_of_length = 0;
 		
@@ -144,6 +136,26 @@ int main(int argc, char *argv[])
 				
 			exit(0);
 		}
+
+        if(strcmp(argv[3], "mem") == 0){
+            
+            if ((numbytes = recv(sockfd, buf, MAXDATASIZE, 0)) == -1)
+            {
+                perror("recv_in_here");
+                // exit(1);
+            }
+            //printf("%d\n",numbytes);
+            
+            buf[numbytes] = '\0';
+            
+            printf("%s\n", buf);
+
+        }
+
+
+
+
+
     free(send_value);
 //arguments.split(" ");
     return 0;

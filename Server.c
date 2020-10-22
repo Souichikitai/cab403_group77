@@ -1,8 +1,3 @@
-/*
-*  Materials downloaded from the web.
-*  Collected and modified for teaching purpose only.
-*/
-
 #include <arpa/inet.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -30,7 +25,7 @@ pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 
 int sockfd, new_fd, servnumbyte;            /* listen on sock_fd, new connection on new_fd */
-
+int send_fd;
 struct sockaddr_in my_addr;    /* my address information */
 struct sockaddr_in their_addr; /* connector's address information */
 socklen_t sin_size;
@@ -524,8 +519,23 @@ void* connection_handler(int *p_thread_client_socket){
             ;  /*clean up child processes*/ 
 		
 		
+	}else{
+		// printf("Works\n");
+
+		//if (!fork())
+        //{ /* this is the child process */
+            if (send(fd, "Hello, world!\n", 15, 0) == -1){
+				perror("send");
+				close(fd);
+				// exit(0);
+			}
+                
+            // close(new_fd);
+            // 
+        // }
 	}
 	close(fd); /* parent doesn't need this */
+	
 	return 0;
 }
 
