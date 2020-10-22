@@ -7,7 +7,7 @@
 int main(){
     while(1){
         char* ptr = malloc(MB);
-        memset(ptr, 1, MB);
+        memset(ptr, 20, MB);
         sleep(1);
     }
 

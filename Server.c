@@ -37,6 +37,55 @@ void *thread_controller(void *arg);
 void kill_child(int signum);
 void Kill_All(int sig);
 
+// // linked list for part E
+// struct entry {
+//    pid_t entry_pid;
+//    int bytes;
+//    char time;
+//    char file_name;
+//    char arguments;
+//    struct entry *next;
+// };
+
+// struct entry *head = NULL;
+// struct entry *current = NULL;
+
+// void insert_entry(pid_t _pid_, int _bytes_, char _time_, char _file_name, char _arguments_){
+	
+// 	struct entry *link = (struct entry*) malloc(sizeof(struct entry));
+
+// 	link->entry_pid = _pid_;
+// 	link->bytes = _bytes_;
+// 	link->time = _time_;
+// 	link->file_name = _file_name;
+// 	link->arguments = _arguments_;
+
+// 	//point to previous first node
+// 	link->next = head;
+
+// 	// point first to new first node
+// 	head = link;
+// }
+
+// struct entry* delete_first()
+// {
+// 	/* data */
+// 	struct entry *temp = head;
+
+// 	head = head->next;
+// 	if(head == NULL){
+// 		current = NULL;
+// 	}
+
+// 	// free(temp);
+
+// 	return temp;
+	
+// };
+
+
+
+
 // void kill_child_die(int sig);
 int sleeptimes;
 int waitflag;
@@ -310,9 +359,8 @@ void* connection_handler(int *p_thread_client_socket){
 		}
 		/* this is the child process */
 		if(pid == 0){
-			// printf("child pid: %d\n", pid);
-			// printf("child getppid: %d\n", getppid());
-			// printf("child getpid: %d\n", getpid());
+			
+			
 			if(!log_state){
 				if(counter >= 4){
 					printf("%s - attempting to execute %s: %s\n", whattime(), arrray[excuted_file_index], arrray[excuted_file_index+1]);
@@ -520,21 +568,17 @@ void* connection_handler(int *p_thread_client_socket){
 		
 		
 	}else{
-		// printf("Works\n");
-
-		//if (!fork())
-        //{ /* this is the child process */
-            if (send(fd, "Hello, world!\n", 15, 0) == -1){
-				perror("send");
-				close(fd);
-				// exit(0);
-			}
-                
-            // close(new_fd);
-            // 
-        // }
+		
+		if (send(fd, "Hello, world!\n", 15, 0) == -1){
+			perror("send");
+			close(fd);
+			// exit(0);
+		}
+        
 	}
-	close(fd); /* parent doesn't need this */
+	close(fd); 
+	close(new_fd);
+	/* parent doesn't need this */
 	
 	return 0;
 }
