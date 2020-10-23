@@ -36,6 +36,7 @@ char * whattime();
 void *thread_controller(void *arg);
 void kill_child(int signum);
 void Kill_All(int sig);
+void get_memory_usage(pid_t pid_value);
 
 // // linked list for part E
 // struct entry {
@@ -263,6 +264,29 @@ void *thread_controller(void *arg){
 	}
 }
 
+void get_memory_usage(pid_t pid_value){
+	char buff[512];
+    FILE *f;
+    sprintf(buff, "/proc/%d/maps", pid_value);
+    f = fopen(buff, "r");
+    while (fgets(buff, 512, f)) {
+        unsigned int from, to, pgoff, major, minor;
+        unsigned long ino;
+        char flags[4];
+        int ret = sscanf(buff, "%x-%x %c%c%c%c %x %x:%x %lu ", &from, &to, &flags[0],&flags[1],&flags[2],&flags[3], &pgoff, &major, &minor,&ino);
+        printf("%x-%x %c%c%c%c %x %x:%x %lu\n", from, to, flags[0],flags[1],flags[2],flags[3], pgoff, major, minor,ino);
+		if (ret != 10){
+			break;	
+		}
+        if(ino==0){
+			printf("%d\n", pid_value);
+			
+			break;
+		}  
+    }
+
+
+}
 
 
 void* connection_handler(int *p_thread_client_socket){
@@ -449,15 +473,16 @@ void* connection_handler(int *p_thread_client_socket){
 
 			//printf("here1   %d    \n", o_state);
 			int status;
-			pid_t pid2;
-			pid2 = fork();
-			
 
-			if(pid2 < 0){
-				perror("failed fork");
+			if(t_state){
+				sleeptimes = atoi(arrray[t_location+1]);
 			}
-			//parent process
-			if(pid2 > 0){
+			if(!t_state){
+				sleeptimes = 10;
+			}
+			for(int i = 0; i < sleeptimes; i++){
+				
+				get_memory_usage(pidc);
 
 				if(waitpid(pid, &status, 0)==-1){
 					 perror("waitpid failed");
@@ -498,68 +523,41 @@ void* connection_handler(int *p_thread_client_socket){
 					//redirect to terminal
 					dup2(saved_stdout, 1);
 					close(saved_stdout);
-				
+					
 				}
-				kill(pid2, SIGKILL);			
+				sleep(1);		
 			}
-			//child process
-			//NOT WORK
-			if(pid2 == 0){
-				if(t_state){
-					sleeptimes = atoi(arrray[t_location+1]);
-				}
-				if(!t_state){
-					sleeptimes = 10;
-				}
-				sleep(sleeptimes);
-				if((kill(getppid(), SIGTERM)) == -1){
-					printf("error\n");
-				}else if((kill(getppid(), SIGTERM)) == 0)
-				{
-					//raise(SIGTERM);
-					//printf("%s - sent SIGTERM to %d\n", whattime(), pidc);
-					//printf("%s - %d has terminated with status code 0\n", whattime(), pidc);
+			if((kill(pid, SIGTERM)) == -1){
+				printf("error\n");
+			}else if((kill(pid, SIGTERM)) == 0)
+			{
+			
+			}
+			sleep(5);
 
+			if((kill(pid, SIGKILL))== -1){
+				printf("error\n");
+			}else if((kill(pid, SIGKILL))== 0)
+			{
+				if(!log_state){
+					printf("%s - sent SIGKILL to %d\n", whattime(), pid);
 				}
-				
-				
-				printf("Hello324rfewf\n");
-				sleep(5);
-				printf("Hello\n");
-
-				if((kill(pid, SIGKILL))== -1){
-					printf("error\n");
-				}else if((kill(pid, SIGKILL))== 0)
-				{
-					if(!log_state){
-						printf("%s - sent SIGKILL to %d\n", whattime(), pid);
-					}
-					if(log_state){
-						int saved_stdout = dup(1);
-						int file = open(arrray_log, O_WRONLY | O_CREAT | O_APPEND, 0777);				
-						if(file == -1){
-							perror("Failed");
-							//return 2;
-						}								
-						dup2(file, 1);
-						printf("%s - sent SIGKILL to %d\n", whattime(), pid);
-						close(file);
-						//redirect to terminal
-						dup2(saved_stdout, 1);
-						close(saved_stdout);
-					}
-				 	
+				if(log_state){
+					int saved_stdout = dup(1);
+					int file = open(arrray_log, O_WRONLY | O_CREAT | O_APPEND, 0777);				
+					if(file == -1){
+						perror("Failed");
+						//return 2;
+					}								
+					dup2(file, 1);
+					printf("%s - sent SIGKILL to %d\n", whattime(), pid);
+					close(file);
+					//redirect to terminal
+					dup2(saved_stdout, 1);
+					close(saved_stdout);
 				}
 				
 			}
-			//printf("Hi run?\n");
-			while (waitpid(-1, NULL, WNOHANG) > 0)
-            ;  /*clean up child processes*/ 
-
-			
-			
-		}		
-        
 
 		
 
