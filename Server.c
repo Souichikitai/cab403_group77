@@ -38,6 +38,8 @@ void kill_child(int signum);
 void Kill_All(int sig);
 void get_memory_usage(pid_t pid_value);
 
+int flags;
+
 // // linked list for part E
 // struct entry {
 //    pid_t entry_pid;
@@ -370,7 +372,7 @@ void* connection_handler(int *p_thread_client_socket){
 
 	if(strcmp(arrray[0], "mem")!=0){
 		
-			   	
+		flags = 1;
         /*crate a new fork */
 		pid_t pid;
 		
@@ -482,89 +484,128 @@ void* connection_handler(int *p_thread_client_socket){
 			}
 			for(int i = 0; i < sleeptimes; i++){
 				
-				get_memory_usage(pidc);
-
-				if(waitpid(pid, &status, 0)==-1){
-					 perror("waitpid failed");
-				}
-				if(!log_state){
-				//printf("%s - %s %s has been executed with pid %d\n", buffer, arrray[excuted_file_index], arrray[excuted_file_index+1], pid);
-					if(WIFEXITED(status)){
-					//flags = 0;
-					// printf("		Test\n");
-						waitflag = 1;
-						const int es = WEXITSTATUS(status);
-						printf("%s - %d has terminated with status code %d\n", whattime(), pid, es);
-						
-					}								
-				}
-
-				if(log_state == 1){	
-
-					int saved_stdout = dup(1);
-
-					int file = open(arrray[log_location+1], O_WRONLY | O_CREAT | O_APPEND, 0777);
+				get_memory_usage(pid);
 				
-					if(file == -1){
-						perror("Failed");
-						//return 2;
-					}
-						
-					dup2(file, 1);
-					//printf("%s - %s %s has been executed with pid %d\n", buffer, arrray[log_index], arrray[log_index+1], pid);
-					if(WIFEXITED(status)){
-						const int es = WEXITSTATUS(status);
-						waitflag = 1;
-						printf("%s - %d has terminated with status code %d\n", whattime(), pid, es);	
-					}
-					log_state = 0;
-					close(file);
+				if(waitpid(pid, &status, 0)==-1){
+					perror("waitpid failed");
+				}
+				//flags = 0;
+				sleep(1);				
+			}
+			if(!log_state){
+				if(WIFEXITED(status)){
+					waitflag = 1;
+					const int es = WEXITSTATUS(status);
+					printf("%s - %d has terminated with status code %d\n", whattime(), pid, es);		
+				}								
+			}
+			if(log_state == 1){	
 
-					//redirect to terminal
-					dup2(saved_stdout, 1);
-					close(saved_stdout);
+				int saved_stdout = dup(1);
+
+				int file = open(arrray[log_location+1], O_WRONLY | O_CREAT | O_APPEND, 0777);
+			
+				if(file == -1){
+					perror("Failed");
+					//return 2;
+				}			
+				dup2(file, 1);
+				//printf("%s - %s %s has been executed with pid %d\n", buffer, arrray[log_index], arrray[log_index+1], pid);
+				if(WIFEXITED(status)){
+					const int es = WEXITSTATUS(status);
+					waitflag = 1;
+					printf("%s - %d has terminated with status code %d\n", whattime(), pid, es);	
+				}
+				log_state = 0;
+				close(file);
+				//redirect to terminal
+				dup2(saved_stdout, 1);
+				close(saved_stdout);	
+			}
+			if(flags){
+				if((kill(pid, SIGTERM)) == -1){
+					printf("error\n");
+				}else if((kill(pid, SIGTERM)) == 0)
+				{			
+				}
+				for(int i = 0; i < 5; i++){			
+					get_memory_usage(pidc);
+					if(waitpid(pid, &status, 0)==-1){
+						perror("waitpid failed");
+					}
+					if(!log_state){
+					//printf("%s - %s %s has been executed with pid %d\n", buffer, arrray[excuted_file_index], arrray[excuted_file_index+1], pid);
+						if(WIFEXITED(status)){
+						flags = 0;
+						// printf("		Test\n");
+							waitflag = 1;
+							const int es = WEXITSTATUS(status);
+							printf("%s - %d has terminated with status code %d\n", whattime(), pid, es);
+							
+						}								
+					}
+
+					if(log_state == 1){	
+
+						int saved_stdout = dup(1);
+
+						int file = open(arrray[log_location+1], O_WRONLY | O_CREAT | O_APPEND, 0777);
+					
+						if(file == -1){
+							perror("Failed");
+							//return 2;
+						}
+							
+						dup2(file, 1);
+						if(WIFEXITED(status)){
+							flags = 0;
+							const int es = WEXITSTATUS(status);
+							waitflag = 1;
+							printf("%s - %d has terminated with status code %d\n", whattime(), pid, es);	
+						}
+						log_state = 0;
+						close(file);
+
+						//redirect to terminal
+						dup2(saved_stdout, 1);
+						close(saved_stdout);
+						
+					}
+					sleep(1);		
+				}
+			}
+			if(flags){
+				if((kill(pid, SIGKILL))== -1){
+					printf("error\n");
+				}else if((kill(pid, SIGKILL))== 0)
+				{
+					if(!log_state){
+						printf("%s - sent SIGKILL to %d\n", whattime(), pid);
+					}
+					if(log_state){
+						int saved_stdout = dup(1);
+						int file = open(arrray_log, O_WRONLY | O_CREAT | O_APPEND, 0777);				
+						if(file == -1){
+							perror("Failed");
+							//return 2;
+						}								
+						dup2(file, 1);
+						printf("%s - sent SIGKILL to %d\n", whattime(), pid);
+						close(file);
+						//redirect to terminal
+						dup2(saved_stdout, 1);
+						close(saved_stdout);
+					}
 					
 				}
-				sleep(1);		
-			}
-			if((kill(pid, SIGTERM)) == -1){
-				printf("error\n");
-			}else if((kill(pid, SIGTERM)) == 0)
-			{
-			
-			}
-			sleep(5);
 
-			if((kill(pid, SIGKILL))== -1){
-				printf("error\n");
-			}else if((kill(pid, SIGKILL))== 0)
-			{
-				if(!log_state){
-					printf("%s - sent SIGKILL to %d\n", whattime(), pid);
-				}
-				if(log_state){
-					int saved_stdout = dup(1);
-					int file = open(arrray_log, O_WRONLY | O_CREAT | O_APPEND, 0777);				
-					if(file == -1){
-						perror("Failed");
-						//return 2;
-					}								
-					dup2(file, 1);
-					printf("%s - sent SIGKILL to %d\n", whattime(), pid);
-					close(file);
-					//redirect to terminal
-					dup2(saved_stdout, 1);
-					close(saved_stdout);
-				}
-				
 			}
 
+			while (waitpid(-1, NULL, WNOHANG) > 0){
+				;  /*clean up child processes*/ 
+			}
 		
-
-        while (waitpid(-1, NULL, WNOHANG) > 0)
-            ;  /*clean up child processes*/ 
-		
-		
+		}
 	}else{
 		
 		if (send(fd, "Hello, world!\n", 15, 0) == -1){
