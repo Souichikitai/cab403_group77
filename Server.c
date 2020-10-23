@@ -36,6 +36,7 @@ char * whattime();
 void *thread_controller(void *arg);
 void kill_child(int signum);
 void Kill_All(int sig);
+void get_memory_usage(pid_t pid_value);
 
 // // linked list for part E
 // struct entry {
@@ -211,7 +212,7 @@ int main(int argc, char *argv[])
 			pthread_mutex_unlock(&mutex);
 			//pthread_setcanceltype(last_type, NULL);//
 			//pthread_cleanup_pop(0);//
-
+			
 
 			//continue;
 		}else{
@@ -263,7 +264,32 @@ void *thread_controller(void *arg){
 	}
 }
 
+void get_memory_usage(pid_t pid_value){
+	
+	char buff[512];
+    FILE *f;
+    sprintf(buff, "/proc/%d/maps", pid_value);
+    f = fopen(buff, "r");
+    while (fgets(buff, 512, f)) {
+		size_t from, to; 
+       	size_t pgoff, major, minor;
+        size_t ino;
 
+        char flags[4];
+        int ret = sscanf(buff, "%12lx-%12lx %c%c%c%c %lx %lx:%lx %lu", &from, &to, &flags[0],&flags[1],&flags[2],&flags[3], &pgoff, &major, &minor,&ino);
+        printf("%12lx-%12lx %c%c%c%c %lx %lx:%lx %lu\n", from, to, flags[0],flags[1],flags[2],flags[3], pgoff, major, minor,ino);
+		if (ret != 10){
+			// break;	
+		}
+        // if(ino==0){
+		// 	printf("%d\n", pid_value);
+
+		// 	break;
+		// }  
+    }
+
+
+}
 
 void* connection_handler(int *p_thread_client_socket){
 
@@ -448,9 +474,12 @@ void* connection_handler(int *p_thread_client_socket){
 			// printf("parent getpid: %d\n", getpid());
 
 			//printf("here1   %d    \n", o_state);
+			get_memory_usage(pidc);
+
 			int status;
 			pid_t pid2;
 			pid2 = fork();
+			
 			
 
 			if(pid2 < 0){
@@ -458,6 +487,12 @@ void* connection_handler(int *p_thread_client_socket){
 			}
 			//parent process
 			if(pid2 > 0){
+
+				
+				// get_memory_usage(pidc);
+				
+				// printf("\n\n");
+				
 
 				if(waitpid(pid, &status, 0)==-1){
 					 perror("waitpid failed");
