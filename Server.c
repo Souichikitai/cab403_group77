@@ -270,31 +270,68 @@ void get_memory_usage(pid_t pid_value){
 	char buff[512];
     FILE *f;
     sprintf(buff, "/proc/%d/maps", pid_value);
-    f = fopen(buff, "r");
-	int zero_counter = 0;
+	f = fopen(buff, "r");
+    if(f == NULL){
+		printf("No pid\n");
+		// fclose(f);
+	}else{
+		printf("test\n");
+		int zero_counter = 0;
 
-    while (fgets(buff, 512, f)) {
-		size_t from, to; 
-       	size_t pgoff, major, minor;
-        size_t ino;
+		//long hex_sum;
 
-        char flags[4];
-        int ret = sscanf(buff, "%12lx-%12lx %c%c%c%c %lx %lx:%lx %lu", &from, &to, &flags[0],&flags[1],&flags[2],&flags[3], &pgoff, &major, &minor,&ino);
-        
-		if (ret != 10){
-			// break;	
-		}
-        if(ino==0){
-			zero_counter++;	
-			if(zero_counter==2){
-				// printf("%d\n", pid_value);
-				printf("%12lx-%12lx %c%c%c%c %lx %lx:%lx %lu\n", from, to, flags[0],flags[1],flags[2],flags[3], pgoff, major, minor,ino);
-				break;
-			}
+		while (fgets(buff, 512, f)) {
+			size_t _start, _end; 
+			size_t offset, _major, _minor;
+			size_t inode;
+
+			// unsigned long start_hex_result=0;
+			// unsigned long end_hex_result=0;
+			// unsigned long divided_hex_result=0;		
+
+			unsigned long start_hex_result;
+			unsigned long end_hex_result;
+			unsigned long divided_hex_result;	
+
 			
-			//break;
-		}  
-    }
+			char time[4];
+			int scan_result = sscanf(buff, "%12lx-%12lx %c%c%c%c %lx %lx:%lx %lu", &_start, &_end, &time[0],&time[1],&time[2],&time[3], &offset, &_major, &_minor,&inode);
+			
+			if (scan_result != 10){
+				printf("Broken\n");
+				break;	
+			}
+			if(inode==0){
+				zero_counter++;	
+				if(zero_counter==2){
+					// printf("%d\n", pid_value);
+					char pStart[256] = "";
+					char pEnd[256] = "";
+					snprintf(pStart, sizeof(pStart), "%12lx", _start);
+					snprintf(pEnd, sizeof(pEnd), "%12lx", _end);
+					// printf("%s\n",pStart);
+					// printf("%s\n",pEnd);
+
+					// size_t test = _end - _start;
+					// printf("%lx\n", test);
+					// printf("%12lx-%12lx %c%c%c%c %lx %lx:%lx %lu\n", _start, _end, time[0],time[1],time[2],time[3], offset, _major, _minor,inode);
+					//printf("%s\n",start_hex_result);
+					start_hex_result = strtoul(pStart, NULL, 16);
+					end_hex_result = strtoul(pEnd, NULL, 16);
+					divided_hex_result = end_hex_result - start_hex_result;
+					// hex_sum=divided_hex_result;
+					printf("%ld\n",divided_hex_result);
+					// printf("%ld\n",end_hex_result);
+					// // printf("%ld\n",hex_sum);
+					// printf("%ld\n",hex_sum);
+					break;
+				}
+				
+				//break;
+			}  
+		}
+		fclose(f);
+	}
 
 
 }
@@ -492,10 +529,12 @@ void* connection_handler(int *p_thread_client_socket){
 			}
 			for(int i = 0; i < sleeptimes; i++){
 				
-				get_memory_usage(pid);
 				
+
 				if(waitpid(pid, &status, WNOHANG)==0){
+					
 					sleep(1);
+					get_memory_usage(pid);
 					waitflag = 1;
 					waitflag2 = 1;
 				}else
@@ -515,6 +554,7 @@ void* connection_handler(int *p_thread_client_socket){
 						//get_memory_usage(pidc);
 						if(waitpid(pid, &status, WNOHANG)==0){
 							sleep(1);
+							get_memory_usage(pid);
 							//printf("Z\n");
 							waitflag2 = 1;
 						}else if(waitpid(pid, &status, WNOHANG)==-1){
