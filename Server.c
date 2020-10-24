@@ -29,6 +29,20 @@ int send_fd;
 struct sockaddr_in my_addr;    /* my address information */
 struct sockaddr_in their_addr; /* connector's address information */
 socklen_t sin_size;
+typedef struct entry entry_t;
+struct entry {
+	// entry_t* first_head;
+    pid_t entry_pid;
+    unsigned long bytes;
+    char* time;
+    char* file_name;
+    char* arguments;
+    struct entry *next;
+};
+
+
+entry_t *first_head1 = NULL;
+entry_t *current = NULL;
 
 char buf[MAXDATASIZE];
 void* connection_handler(int *client_socket);
@@ -37,53 +51,34 @@ void *thread_controller(void *arg);
 void kill_child(int signum);
 void Kill_All(int sig);
 void get_memory_usage(pid_t pid_value);
-
+void testprint(entry_t* head);
+int check_contents_inside_linked_list(entry_t* first_head);
 
 // // linked list for part E
-// struct entry {
-//    pid_t entry_pid;
-//    int bytes;
-//    char time;
-//    char file_name;
-//    char arguments;
-//    struct entry *next;
-// };
 
-// struct entry *head = NULL;
-// struct entry *current = NULL;
 
-// void insert_entry(pid_t _pid_, int _bytes_, char _time_, char _file_name, char _arguments_){
+
+entry_t* insert_entry(entry_t* first_head,pid_t _pid_, unsigned long _bytes_, char* _time_, char* _file_name, char* _arguments_){
 	
-// 	struct entry *link = (struct entry*) malloc(sizeof(struct entry));
+	// printf("I am inserting\n");
+	entry_t *link = (entry_t*) malloc(sizeof(entry_t));
 
-// 	link->entry_pid = _pid_;
-// 	link->bytes = _bytes_;
-// 	link->time = _time_;
-// 	link->file_name = _file_name;
-// 	link->arguments = _arguments_;
+	link->entry_pid = _pid_;
+	link->bytes = _bytes_;
+	link->time = _time_;
+	link->file_name = _file_name;
+	link->arguments = _arguments_;
 
-// 	//point to previous first node
-// 	link->next = head;
+	//point to previous first node
+	link->next = first_head;
 
-// 	// point first to new first node
-// 	head = link;
-// }
+	// point first to new first node
+	first_head = link;
 
-// struct entry* delete_first()
-// {
-// 	/* data */
-// 	struct entry *temp = head;
+	return first_head;
+}
 
-// 	head = head->next;
-// 	if(head == NULL){
-// 		current = NULL;
-// 	}
 
-// 	// free(temp);
-
-// 	return temp;
-	
-// };
 
 
 
@@ -95,6 +90,8 @@ int waitflag2;
 void *thread_status;
 
 char *arrray_log;
+char *file_name;
+char *argv_item;
 
 int log_state;
 int o_state;
@@ -116,6 +113,7 @@ pid_t pidc;
 
 int main(int argc, char *argv[])
 {
+	
     // thread_pool = (pthread_t *)malloc(THREADS_NUM*sizeof(thread_pool));
     /* generate the socket */
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
@@ -179,7 +177,7 @@ int main(int argc, char *argv[])
     /* for every accepted connection, use a sepetate process or thread to serve it */
     while (1)
     { /* main accept() loop */
-		
+		//first_head1 = NULL;
 		// pthread_mutex_lock(&mutex);
 		// append_que(&sockfd);
 		// pthread_mutex_unlock(&mutex);
@@ -267,6 +265,9 @@ void *thread_controller(void *arg){
 }
 
 void get_memory_usage(pid_t pid_value){
+
+	//entry_t* first_head = NULL;
+
 	char buff[512];
     FILE *f;
     sprintf(buff, "/proc/%d/maps", pid_value);
@@ -275,19 +276,16 @@ void get_memory_usage(pid_t pid_value){
 		printf("No pid\n");
 		// fclose(f);
 	}else{
-		printf("test\n");
+		//printf("test\n");
 		int zero_counter = 0;
 
 		//long hex_sum;
+		
 
 		while (fgets(buff, 512, f)) {
 			size_t _start, _end; 
 			size_t offset, _major, _minor;
-			size_t inode;
-
-			// unsigned long start_hex_result=0;
-			// unsigned long end_hex_result=0;
-			// unsigned long divided_hex_result=0;		
+			size_t inode;	
 
 			unsigned long start_hex_result;
 			unsigned long end_hex_result;
@@ -309,21 +307,16 @@ void get_memory_usage(pid_t pid_value){
 					char pEnd[256] = "";
 					snprintf(pStart, sizeof(pStart), "%12lx", _start);
 					snprintf(pEnd, sizeof(pEnd), "%12lx", _end);
-					// printf("%s\n",pStart);
-					// printf("%s\n",pEnd);
-
-					// size_t test = _end - _start;
-					// printf("%lx\n", test);
-					// printf("%12lx-%12lx %c%c%c%c %lx %lx:%lx %lu\n", _start, _end, time[0],time[1],time[2],time[3], offset, _major, _minor,inode);
-					//printf("%s\n",start_hex_result);
+					
 					start_hex_result = strtoul(pStart, NULL, 16);
 					end_hex_result = strtoul(pEnd, NULL, 16);
 					divided_hex_result = end_hex_result - start_hex_result;
-					// hex_sum=divided_hex_result;
-					printf("%ld\n",divided_hex_result);
-					// printf("%ld\n",end_hex_result);
-					// // printf("%ld\n",hex_sum);
-					// printf("%ld\n",hex_sum);
+					
+					//printf("%ld\n",divided_hex_result);
+					
+					first_head1 = insert_entry(first_head1, pid_value, divided_hex_result, whattime(), file_name, argv_item);
+
+					
 					break;
 				}
 				
@@ -404,6 +397,8 @@ void* connection_handler(int *p_thread_client_socket){
 	}
 	
 	arrray_log = arrray[log_location+1];
+	file_name = arrray[excuted_file_index];
+	argv_item = arrray[excuted_file_index+1];
     
     //print out which file currently attempting with given arguments
 	if(log_state == 1){
@@ -648,7 +643,14 @@ void* connection_handler(int *p_thread_client_socket){
 		
 		}
 	}else{
-		
+		// testprint(first_head1);
+		int flag;
+		flag = check_contents_inside_linked_list(first_head1);
+		if(flag == 1){
+			testprint(first_head1);
+		}else{
+			printf("Nothing is in linked list\n");
+		}
 		if (send(fd, "Hello, world!\n", 15, 0) == -1){
 			perror("send");
 			close(fd);
@@ -662,6 +664,53 @@ void* connection_handler(int *p_thread_client_socket){
 	
 	return 0;
 }
+
+struct entry* delete_first()
+{
+	/* data */
+	entry_t *temp = first_head1;
+
+	first_head1 = first_head1->next;
+	if(first_head1 == NULL){
+		current = NULL;
+	}
+
+	// free(temp);
+
+	return temp;
+	
+};
+
+int check_contents_inside_linked_list(entry_t* first_head) 
+{ 
+    entry_t* current = first_head;  // Initialize current 
+	if(current == NULL){
+		return 0;
+	}
+    // while (current != NULL) 
+    // { 
+    //     if (current->entry_pid == pid_v) 
+    //         return 1; 
+    //     current = current->next; 
+    // } 
+    return 1; 
+}
+
+
+
+
+void testprint(entry_t* head){
+	entry_t *current_node = head;
+
+	if(current_node==NULL){
+		printf("  sEmpty \n");
+	}
+   	//while ( current_node != NULL) {
+        printf("pid: %d  bytes: %ld\n", current_node->entry_pid, current_node->bytes);
+        //current_node = current_node->next;
+    //}
+}
+
 
 void kill_child(int signum){
 	if(!log_state){
