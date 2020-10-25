@@ -23,6 +23,7 @@
 pthread_t thread_pool[THREADS_NUM];
 pid_t entry_pid[THREADS_NUM];
 
+
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex_new = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
@@ -62,7 +63,7 @@ struct entry {
 // entry_t * first_head1[THREADS_NUM];
 
 
-entry_t * first_head1;
+entry_t * first_head1 = NULL;
 
 entry_t *current = NULL;
 
@@ -75,6 +76,9 @@ void Kill_All(int sig);
 void get_memory_usage(pid_t pid_value);
 char *testprint(entry_t* head, int num);
 int check_contents_inside_linked_list(entry_t* first_head);
+int check_contents_inside_linked_list2(entry_t* first_head, pid_t pid_v);
+void printAll(entry_t *first_head);
+void print_specific_pid(entry_t *first_head, char * new_pid);
 
 // // linked list for part E
 
@@ -97,6 +101,11 @@ entry_t* insert_entry(entry_t* first_head, pid_t _pid_, unsigned long _bytes_, c
 	// point first to new first node
 	first_head = link;
 	
+	// for(){
+	// 	if(check_contents_inside_linked_list2(first_head, _pid_)){
+			
+	// 	}
+	// }
 	
 	return first_head;
 	// pthread_mutex_unlock(&mutex_new);
@@ -342,7 +351,9 @@ void get_memory_usage(pid_t pid_value){
 					
 					//printf("%ld\n",divided_hex_result);
 					pthread_mutex_lock(&mutex_new);
-					first_head1 = insert_entry(first_head1, pid_value, divided_hex_result, whattime(), file_name1, argv_item);
+					char * this_time = malloc(19);
+					sprintf(this_time, "%s", whattime());
+					first_head1 = insert_entry(first_head1, pid_value, divided_hex_result, this_time, file_name1, argv_item);
 					pthread_mutex_unlock(&mutex_new);
 					
 					break;
@@ -676,22 +687,39 @@ void* connection_handler(int *p_thread_client_socket){
 		int flag;
 		
 		flag = check_contents_inside_linked_list(first_head1);
-		
-		
-		if(flag == 1){
-			for(int i = 0; i<pid_counter;i++){
-				char *send_item;
-				send_item = testprint(first_head1, i);
-				printf("%s\n", send_item);
-				if (send(fd, send_item, (size_t)&send_of_length, 0) == -1){
-					perror("send");	
-				}	
-			// exit(0);
-			}
-			close(fd);
-		}else{
-			printf("Nothing is in linked list\n");
+
+		for(int i = 0; i<pid_counter; i++){
+
 		}
+
+		
+		
+		if(arrray[1] != NULL){
+			printAll(first_head1);
+			// print_specific_pid(first_head1, arrray[1]);
+
+		}else
+		{
+			/* code */
+			if(flag == 1){
+				for(int i = 0; i<pid_counter;i++){
+					char *send_item;
+					send_item = testprint(first_head1, i);
+					//printf("%s\n", send_item);
+					if (send(fd, send_item, (size_t)&send_of_length, 0) == -1){
+						perror("send");	
+					}	
+				// exit(0);
+				}
+				close(fd);
+			}else{
+				printf("Nothing is in linked list\n");
+			}
+		}
+		
+		
+
+		
 		
         // pthread_mutex_unlock(&mutex);
 	}
@@ -718,42 +746,105 @@ struct entry* delete_first()
 	
 };
 
+
+void printAll(entry_t *first_head){
+	entry_t* current_node = first_head;
+	while(current_node != NULL){
+		printf("%s %ld %d\n", current_node->pid_elements.time, current_node->pid_elements.bytes, current_node->entry_pid);	
+		//printf("%s\n", current_node->pid_elements.file_name);
+		current_node = current_node->next;
+	}
+}
+
+
+void print_specific_pid(entry_t *first_head, char * new_pid){
+	entry_t* current_node = first_head;
+	//char * send_value = "";
+	//int size_of_length = 0;
+	while(current_node != NULL){
+		char * mypid = malloc(6);
+		sprintf(mypid, "%d", current_node->entry_pid);
+		if(strcmp(mypid, new_pid) == 0){
+			printf("%s %ld %d\n", current_node->pid_elements.time, current_node->pid_elements.bytes, current_node->entry_pid);
+
+		}		
+		//printf("%s\n", current_node->pid_elements.file_name);
+		current_node = current_node->next;
+	}
+
+}
+
+
+// void get_latest_pid(entry_t *first_head, entry_t *new_pid){
+// 	entry_t* current_node = first_head;
+// 	while(current_node != NULL){
+
+// 		//for(int i =0; i < pid_counter; i++){
+			
+// 		//}
+
+
+
+// 		if(current_node->entry_pid == new_pid){
+
+// 		}
+
+// 		printf("%s %ld %d\n", current_node->pid_elements.time, current_node->pid_elements.bytes, current_node->entry_pid);	
+// 		//printf("%s\n", current_node->pid_elements.file_name);
+// 		current_node = current_node->next;
+// 	}
+// }
+// void print_latest_pid(entry_t *latest_pid){
+	
+// }
+
+
 int check_contents_inside_linked_list(entry_t* first_head) 
 { 
     entry_t* current = first_head;  // Initialize current 
 	if(current == NULL){
 		return 0;
 	}
-    // while (current != NULL) 
-    // { 
-    //     if (current->entry_pid == pid_v) 
-    //         return 1; 
-    //     current = current->next; 
-    // } 
-    return 1; 
+
+	return 1;
+   
+}
+
+int check_contents_inside_linked_list2(entry_t* first_head, pid_t pid_v) 
+{ 
+    entry_t* current = first_head;  // Initialize current 
+	if(current == NULL){
+		return 0;
+	}
+    while (current != NULL) 
+    { 
+        if (current->entry_pid == pid_v) 
+            return 1; 
+        current = current->next; 
+    } 
+    return 0; 
 }
 
 
 
 
 char *testprint(entry_t* head, int num){
-	printf("counter: %d\n", pid_counter);
+	//printf("counter: %d\n", pid_counter);
 	// pthread_mutex_lock(&mutex);
 	entry_t *current_node = head;
 	char * send_value = "";
 	int size_of_length = 0;
 
 	
-
 	if(current_node==NULL){
 		printf("  sEmpty \n");
 		return NULL;
 	}else
 	{
-		printf("num: %d\n",num);
+		//printf("num: %d\n",num);
 		// printf("here %s\n", current_node->pid_elements.file_name);
 		char * mypid = malloc(6);
-		printf("koko : : : %d\n", current_node->entry_pid);
+		//printf("koko : : : %d\n", current_node->entry_pid);
 		sprintf(mypid, "%d", current_node->entry_pid);
 		
 		char bytes_send[256] = "";
@@ -807,6 +898,8 @@ char *testprint(entry_t* head, int num){
     //}
 	// pthread_mutex_unlock(&mutex);
 }
+
+
 
 
 void kill_child(int signum){
