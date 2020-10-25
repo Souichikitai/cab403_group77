@@ -138,18 +138,21 @@ int main(int argc, char *argv[])
 		}
 
         if(strcmp(argv[3], "mem") == 0){
-            
-            if ((numbytes = recv(sockfd, buf, MAXDATASIZE, 0)) == -1)
+            while (1)
             {
-                perror("recv_in_here");
-                // exit(1);
+                if ((numbytes = recv(sockfd, buf, MAXDATASIZE, 0)) == -1)
+                {
+                    perror("recv_in_here");
+                    // exit(1);
+                    break;
+                }else
+                {
+                    buf[numbytes] = '\0';
+            
+                    printf("%s\n", buf);
+                }
+                
             }
-            //printf("%d\n",numbytes);
-            
-            buf[numbytes] = '\0';
-            
-            printf("%s\n", buf);
-
         }
 
 
