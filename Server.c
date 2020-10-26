@@ -75,14 +75,14 @@ void *thread_controller(void *arg);
 void kill_child(int signum);
 void Kill_All(int sig);
 void get_memory_usage(pid_t pid_value);
-void testprint(entry_t* head);
+char * testprint(entry_t* head);
 int check_contents_inside_linked_list(entry_t* first_head);
 int check_contents_inside_linked_list2(entry_t* first_head, pid_t pid_v);
 void printAll(entry_t *first_head);
 char * print_specific_pid(entry_t *first_head, char * new_pid);
 void find_latest_linked_list(entry_t *first_head);
 
-char * send_value;
+
 // // linked list for part E
 
 
@@ -690,9 +690,6 @@ void* connection_handler(int *p_thread_client_socket){
 		int flag;
 		
 		flag = check_contents_inside_linked_list(first_head1);
-
-		
-
 		//find_latest_linked_list(first_head1);
 		
 		if(arrray[1] != NULL){
@@ -708,15 +705,15 @@ void* connection_handler(int *p_thread_client_socket){
 			/* code */
 			if(flag == 1){
 				
-				//char *send_item;
-				testprint(first_head1);
-				//send_item = send_value;
-				printf("%s\n", send_value);
-				if (send(fd, send_value, (size_t)&send_of_length, 0) == -1){
+				char *send_item;
+				send_item = testprint(first_head1);
+				
+				printf("%s\n", send_item);
+				if (send(fd, send_item, (size_t)&send_of_length, 0) == -1){
 					perror("send");	
 				}	
 				// exit(0);
-				free(send_value);
+				
 				close(fd);	
 			}else{
 				printf("Nothing is in linked list\n");
@@ -835,7 +832,7 @@ void printAll(entry_t *first_head){
 
 
 char * print_specific_pid(entry_t *first_head, char * new_pid){
-	printf("TEst");
+	//printf("TEst");
 	entry_t* current_node = first_head;
 	char * send_values = "";
 	int size_of_length = 0;
@@ -921,11 +918,11 @@ int check_contents_inside_linked_list2(entry_t* first_head, pid_t pid_v)
 
 
 
-void testprint(entry_t* head){
+char * testprint(entry_t* head){
 	//printf("counter: %d\n", pid_counter);
 	// pthread_mutex_lock(&mutex);
 	entry_t *current_node = head;
-	send_value = "";
+	char * send_value = "";
 	int size_of_length = 0;
 	char * mypid = malloc(6);
 	char bytes_send[256] = "";
@@ -933,7 +930,7 @@ void testprint(entry_t* head){
 	
 	if(current_node==NULL){
 		printf("  Empty \n");
-		//return NULL;
+		return NULL;
 	}else{
 		//printf("num: %d\n",num);
 		// printf("here %s\n", current_node->pid_elements.file_name);
@@ -978,7 +975,7 @@ void testprint(entry_t* head){
 		//printf("%s\n", send_value);
 	free(mypid);
 
-	//return send_value;
+	return send_value;
 	}
 	
    	//while ( current_node != NULL) {
