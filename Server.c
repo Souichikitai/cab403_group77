@@ -79,6 +79,7 @@ int check_contents_inside_linked_list(entry_t* first_head);
 int check_contents_inside_linked_list2(entry_t* first_head, pid_t pid_v);
 void printAll(entry_t *first_head);
 void print_specific_pid(entry_t *first_head, char * new_pid);
+void find_latest_linked_list(entry_t *first_head);
 
 // // linked list for part E
 
@@ -688,11 +689,9 @@ void* connection_handler(int *p_thread_client_socket){
 		
 		flag = check_contents_inside_linked_list(first_head1);
 
-		for(int i = 0; i<pid_counter; i++){
-
-		}
-
 		
+
+		find_latest_linked_list(first_head1);
 		
 		if(arrray[1] != NULL){
 			printAll(first_head1);
@@ -747,6 +746,75 @@ struct entry* delete_first()
 };
 
 
+void find_latest_linked_list(entry_t *first_head){
+
+	entry_t * current_node = first_head;
+
+	//int this_counter = 0;
+	//int righ_counter = 0;
+
+	char * current_pid = malloc(6);
+	// char * previous_pid = malloc(6);
+
+	//char * pid_array[THREADS_NUM];
+
+	while (current_node != NULL)
+	{
+		/* code */
+		// char * current_pid = malloc(6);
+		// sprintf(current_pid, "%d", current_node->entry_pid);
+        // if (strcmp(current_pid ,new_pid)) 
+        //     return 1; 
+        // current_node = current->next; 
+
+
+
+		sprintf(current_pid, "%d", current_node->entry_pid);
+		if(strcmp(whattime(), current_node->pid_elements.time)==0){
+			printf("%s %ld\n", current_pid, current_node->pid_elements.bytes);
+		}
+		/*
+		if(this_counter > 0){
+
+			int status = 0;
+
+			for(int i =0; i < righ_counter; i++){
+				if(strcmp(current_pid , pid_array[i]) == 0){
+					status = 1;
+				}
+			}
+
+			if(status==0){
+				righ_counter++;
+				pid_array[righ_counter] = current_pid;
+			}
+
+			
+			// sprintf(current_pid, "%d", current_node->entry_pid);
+			// previous_pid = current_pid;
+			
+			this_counter++;
+		
+		}else{
+			this_counter++;
+			// previous_pid = current_pid;
+			pid_array[0] = current_pid;
+			continue;
+		}
+		*/
+		current_node = current_node->next;
+	}
+
+	/*if(righ_counter > 0){
+		for(int i = 0; i < righ_counter; i++){
+		printf("%d\n",pid_array[i]);
+	}
+	}*/
+
+	
+}
+
+
 void printAll(entry_t *first_head){
 	entry_t* current_node = first_head;
 	while(current_node != NULL){
@@ -759,14 +827,25 @@ void printAll(entry_t *first_head){
 
 void print_specific_pid(entry_t *first_head, char * new_pid){
 	entry_t* current_node = first_head;
-	//char * send_value = "";
-	//int size_of_length = 0;
+	char * send_value = "";
+	int size_of_length = 0;
 	while(current_node != NULL){
 		char * mypid = malloc(6);
 		sprintf(mypid, "%d", current_node->entry_pid);
+		char bytes_send[256] = "";
+		snprintf(bytes_send, sizeof(bytes_send), "%ld", current_node->pid_elements.bytes);
 		if(strcmp(mypid, new_pid) == 0){
 			printf("%s %ld %d\n", current_node->pid_elements.time, current_node->pid_elements.bytes, current_node->entry_pid);
-
+			size_of_length+=strlen(current_node->pid_elements.time);
+			size_of_length++;
+			size_of_length+=strlen(bytes_send);
+			size_of_length++;
+			size_of_length+=strlen(mypid);
+			strcat(send_value, current_node->pid_elements.time);
+			strcat(send_value, " ");
+			strcat(send_value, bytes_send);
+			strcat(send_value, " ");
+			strcat(send_value, mypid);
 		}		
 		//printf("%s\n", current_node->pid_elements.file_name);
 		current_node = current_node->next;

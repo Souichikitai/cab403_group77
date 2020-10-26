@@ -142,7 +142,7 @@ int main(int argc, char *argv[])
             {
                 if ((numbytes = recv(sockfd, buf, MAXDATASIZE, 0)) == -1)
                 {
-                    perror("recv_in_here");
+                    // perror("recv_in_here");
                     // exit(1);
                     break;
                 }else
