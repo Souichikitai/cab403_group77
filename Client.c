@@ -10,7 +10,7 @@
 #include <time.h>
 #include <ctype.h>
 
-#define MAXDATASIZE 100 /* max number of bytes we can get at once */
+#define MAXDATASIZE 255 /* max number of bytes we can get at once */
 
 static void show_error(){
 		fprintf(stderr, "usage: controller <address> <port> {[- out_file] [-log log_file] [-t seconds] <file> [arg...] | mem [pid] | memkill <percent>}\n");
@@ -138,21 +138,20 @@ int main(int argc, char *argv[])
 		}
 
         if(strcmp(argv[3], "mem") == 0){
-            while (1)
-            {
+            
                 if ((numbytes = recv(sockfd, buf, MAXDATASIZE, 0)) == -1)
                 {
-                    // perror("recv_in_here");
+                    perror("recv_in_here");
                     // exit(1);
-                    break;
+                    //break;
                 }else
                 {
                     buf[numbytes] = '\0';
-            
+                    
                     printf("%s\n", buf);
                 }
                 
-            }
+            
         }
 
 
