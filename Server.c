@@ -18,10 +18,10 @@
 
 #define BACKLOG 10 /* how many pending connections queue will hold */
 #define MAXDATASIZE 256 /* max number of bytes we can get at once */
-#define THREADS_NUM 5
+#define THREADS_NUM 5 /* max number of threads we can get at once */
 
 // pthread_t *thread_pool;
-pthread_t thread_pool[THREADS_NUM];
+pthread_t thread_pool[THREADS_NUM]; /* Linked list Entry */
 //pid_t entry_pid[THREADS_NUM];
 
 
@@ -29,47 +29,37 @@ pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex_new = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 
-int sockfd, new_fd, servnumbyte;            /* listen on sock_fd, new connection on new_fd */
-int send_fd;
-int send_of_length = 0;
-int send_of_length_pid = 0;
-struct sockaddr_in my_addr;    /* my address information */
-struct sockaddr_in their_addr; /* connector's address information */
-socklen_t sin_size;
-typedef struct entry entry_t;
-typedef struct pid_entry_value pentry_t;
+int sockfd, new_fd, servnumbyte;/* listen on sock_fd, new connection on new_fd */
+int send_fd;                    /*file descriptor-store all data from server to client */ 
+int send_of_length = 0;         /* length of value sent to client  */
+int send_of_length_pid = 0;     /*Used for t sending memeory history to client   */
+struct sockaddr_in my_addr;     /* my address information */
+struct sockaddr_in their_addr;  /* connector's address information */
+socklen_t sin_size;             /* Used to get connection from client */
+typedef struct entry entry_t;   /* Linked list Entry */
+typedef struct pid_entry_value pentry_t; /* Linked list PID value */
 
+/* Each PID value such as file name,agruments and time*/
 struct pid_entry_value {
-	// entry_t* first_head;
-	// pentry_t entry_pid;
     unsigned long bytes;
     char* file_name;
     char* arguments;
 	char* time;
-    
-
-    // char* time;
-    // struct entry *next;
 };
-
+/* THis link list has individual process ID,that is genrated by the folk */
 struct entry {
-	// entry_t* first_head;
     pid_t entry_pid;
-	
 	pentry_t pid_elements;
-
-	struct entry *next;
+    struct entry *next;
 };
-
-
-// entry_t * first_head1[THREADS_NUM];
-
-
+/* Innitialize head as a NULL*/
 entry_t * first_head1 = NULL;
-
 entry_t *current = NULL;
 
-char buf[MAXDATASIZE];
+
+char buf[MAXDATASIZE];/*This buffer array stores all arguments sent from client*/
+
+/* Declaring all functions used below */
 void* connection_handler(int *client_socket);
 char * whattime();
 void *thread_controller(void *arg);
@@ -78,19 +68,18 @@ void Kill_All(int sig);
 void get_memory_usage(pid_t pid_value);
 char * testprint(entry_t* head);
 int check_contents_inside_linked_list(entry_t* first_head);
-int check_contents_inside_linked_list2(entry_t* first_head, pid_t pid_v);
+// int check_contents_inside_linked_list2(entry_t* first_head, pid_t pid_v);
 void printAll(entry_t *first_head);
 char * print_specific_pid(entry_t *first_head, char * new_pid);
-void find_latest_linked_list(entry_t *first_head);
+// void find_latest_linked_list(entry_t *first_head);
 
 
-// // linked list for part E
 
+int pid_counter = 0; /*Counts the number of PID*/
 
-int pid_counter = 0;
+/*This function is used to insert new PID to global link list for part E*/
 entry_t* insert_entry(entry_t* first_head, pid_t _pid_, unsigned long _bytes_, char* _time_, char* _file_name, char* _arguments_){
-	// pthread_mutex_lock(&mutex_new);
-	// printf("I am inserting\n");
+
 	entry_t *link = (entry_t*) malloc(sizeof(entry_t));
 
 	link->entry_pid = _pid_;
@@ -98,29 +87,20 @@ entry_t* insert_entry(entry_t* first_head, pid_t _pid_, unsigned long _bytes_, c
 	link->pid_elements.time = _time_;
 	link->pid_elements.file_name = _file_name;
 	link->pid_elements.arguments = _arguments_;
-	//printf("%s\n",_file_name);
+	
 	//point to previous first node
 	link->next = first_head;
 
 	// point first to new first node
 	first_head = link;
 	
-	// for(){
-	// 	if(check_contents_inside_linked_list2(first_head, _pid_)){
-			
-	// 	}
-	// }
+	
 	
 	return first_head;
-	// pthread_mutex_unlock(&mutex_new);
+	
 }
 
-
-
-
-
-
-// void kill_child_die(int sig);
+/* These variables are used as flag to keep track of what is inside of each request from client*/
 int sleeptimes;
 int waitflag;
 int waitflag2;
@@ -145,13 +125,13 @@ int t_location;
 
 
 pid_t pidc;
-/*#define MYPORT 54321 the port users will be connecting to */
-//static int flags=0;
+
+
 
 int main(int argc, char *argv[])
 {
 	
-    // thread_pool = (pthread_t *)malloc(THREADS_NUM*sizeof(thread_pool));
+    
     /* generate the socket */
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
     {
@@ -203,79 +183,50 @@ int main(int argc, char *argv[])
 		pthread_create(&thread_pool[i], NULL, thread_controller, &sockfd);
 	}
 
-	signal(SIGTERM, kill_child);
-	signal(SIGINT, Kill_All);
+	signal(SIGTERM, kill_child); /* Recieve signal from each threa to terminate child */
+	signal(SIGINT, Kill_All);    /* Recieve signal from each threa to terminate program */
 
 
-	
-	
-	
-    /* repeat: accept, send, close the connection */
+	/* repeat: accept, send, close the connection */
     /* for every accepted connection, use a sepetate process or thread to serve it */
     while (1)
-    { /* main accept() loop */
-		//first_head1 = NULL;
-		// pthread_mutex_lock(&mutex);
-		// append_que(&sockfd);
-		// pthread_mutex_unlock(&mutex);
-
-		// for(int i =0; i < THREADS_NUM; i++){
-		// 	pthread_join(thread_pool[i], NULL);
-		// }
-
+    { 
 		
-		sin_size = sizeof(struct sockaddr_in);
+		sin_size = sizeof(struct sockaddr_in); /*Get size of address*/
+
+		/* Accept each connection from client*/
 		if ((new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size)) != -1)
 		{
 			    printf("%s - connection received from %s\n", whattime(),
     			inet_ntoa(their_addr.sin_addr));
 			
-			// pthread_t t;
-			// //pthread_t t1;
-			// int *pclient = malloc(sizeof(int));
-			// *pclient = sockfd;
-			// //connection_handler(pclient);         
-			// pthread_create(&t, NULL, connection_handler, NULL);
+		
 
-			int *pclient;
-			//int last_type;//
-			pclient = &new_fd;
-			//pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, &last_type);//
-			//pthread_cleanup_push((void(*)(void *))pthread_mutex_lock, (void *)&mutex);//
-			pthread_mutex_lock(&mutex);
-			append_que(pclient);
-			// pthread_join(thread_pool[0], NULL);
-			//pthread_cond_wait(&cond, &mutex);//
-			pthread_mutex_unlock(&mutex);
-			//pthread_setcanceltype(last_type, NULL);//
-			//pthread_cleanup_pop(0);//
-
-
-			//continue;
-		}else{
+				int *pclient;
+				
+				pclient = &new_fd;
+				
+				pthread_mutex_lock(&mutex);
+				append_que(pclient);
+				
+				pthread_mutex_unlock(&mutex);
+					
+		}else
+		{
 			perror("accept");
 		}
 
 
-		//pthread_create(&t1, NULL, connection_handler, pclient);
+		
     }
-
-		// for(int i =0; i < THREADS_NUM; i++){
-		// 	pthread_join(thread_pool[i], NULL);
-		// }
-
-	// free(thread_pool);
-	// pthread_exit(NULL);
-	//free(sockfd);
-	close(sockfd);
-
-	return 0;
+    close(sockfd);
+    return 0;
 }
-
+/*Get curren time*/
 char * whattime(){
-
-	static char buffer[26];
-
+    
+    static char buffer[26];
+    
 	time_t timer;
 	
 	struct tm* tm_info;
@@ -286,42 +237,35 @@ char * whattime(){
 	return buffer;
 }
 
-
+/*Thread controller is used for thread pool required in part c and uses mutex unlock*/
 void *thread_controller(void *arg){
 	while(1){
 		
-		int *pclient;
+		int *pclient; 
+	   /* Removes a thread from the linked list*/
 		pthread_mutex_unlock(&mutex);
 		pclient = remove_que();
 		pthread_mutex_unlock(&mutex);
-
-		if(pclient != NULL){
+        
+		if(pclient != NULL){  /*If there is no thread in the linked list called connection handler*/
 			connection_handler(pclient);
 		}
 	}
 }
 
+/* This funtion is used to get the memory usage from proc/maps file*/
 void get_memory_usage(pid_t pid_value){
 
-	//first_head1 = NULL;
-	//entry_t* first_head = NULL;
-	// pthread_mutex_lock(&mutex);
-
-	
-
-	char buff[512];
+    char buff[512];
     FILE *f;
     sprintf(buff, "/proc/%d/maps", pid_value);
 	f = fopen(buff, "r");
     if(f == NULL){
 		printf("No pid\n");
-		// fclose(f);
-	}else{
-		//printf("test\n");
-		int zero_counter = 0;
-
-		//long hex_sum;
 		
+	}else{
+		
+		int zero_counter = 0;
 
 		while (fgets(buff, 512, f)) {
 			size_t _start, _end; 
@@ -334,6 +278,7 @@ void get_memory_usage(pid_t pid_value){
 
 			
 			char time[4];
+			/*Scan start and end*/
 			int scan_result = sscanf(buff, "%12lx-%12lx %c%c%c%c %lx %lx:%lx %lu", &_start, &_end, &time[0],&time[1],&time[2],&time[3], &offset, &_major, &_minor,&inode);
 			
 			if (scan_result != 10){
@@ -343,46 +288,46 @@ void get_memory_usage(pid_t pid_value){
 			if(inode==0){
 				zero_counter++;	
 				if(zero_counter==2){
-					// printf("%d\n", pid_value);
+					
 					char pStart[256] = "";
 					char pEnd[256] = "";
 					snprintf(pStart, sizeof(pStart), "%12lx", _start);
 					snprintf(pEnd, sizeof(pEnd), "%12lx", _end);
 					
+					/*Converts from hex-decimal to decimal*/
 					start_hex_result = strtoul(pStart, NULL, 16);
 					end_hex_result = strtoul(pEnd, NULL, 16);
-					divided_hex_result = end_hex_result - start_hex_result;
+					divided_hex_result = end_hex_result - start_hex_result; /*Subtract the end decimal to the start decimal*/
 					
-					//printf("%ld\n",divided_hex_result);
+					
 					pthread_mutex_lock(&mutex_new);
-					char * this_time = malloc(19);
+					char * this_time = malloc(19); 
 					sprintf(this_time, "%s", whattime());
+					
+					/*Memory usage PID value,time,file name and argument to add into the PID linked list for part E*/
 					first_head1 = insert_entry(first_head1, pid_value, divided_hex_result, this_time, file_name1, argv_item);
 					pthread_mutex_unlock(&mutex_new);
 					
 					break;
 				}
 				
-				//break;
+				
 			}  
 		}
 		fclose(f);
 	}
-	// pthread_mutex_unlock(&mutex);
+	
 
 }
 
-
+/*Handles the connection request between controller and overseer*/
 void* connection_handler(int *p_thread_client_socket){
-
-	
-
 	int fd = *p_thread_client_socket; 
         
 	if ((servnumbyte = recv(fd, buf, MAXDATASIZE, 0)) == -1)
     {
         perror("recv");
-        //exit(1);       	
+            	
     }
 	    
 	    
@@ -418,20 +363,20 @@ void* connection_handler(int *p_thread_client_socket){
 
 	for(int i = 0; i < counter; i++){
 
-		if(strcmp(arrray[i], "-o") == 0){
+		if(strcmp(arrray[i], "-o") == 0){ /*output file*/
 			o_state = 1;
 			o_index += 2;
 			o_location = i;
 			excuted_file_index+=2;
 		}
-		if(strcmp(arrray[i], "-log") == 0){
+		if(strcmp(arrray[i], "-log") == 0){ /*log option*/
 			log_state = 1;
 			log_index += 2 + o_index;
 			log_location = i;
 			excuted_file_index+=2;
 		}
 
-		if(strcmp(arrray[i], "-t") == 0){
+		if(strcmp(arrray[i], "-t") == 0){ /*Time option*/
 			t_state = 1;
 			t_index += 2 + log_index;
 			t_location = i;
@@ -442,21 +387,12 @@ void* connection_handler(int *p_thread_client_socket){
 	
 	
     
-    //print out which file currently attempting with given arguments
-	if(log_state == 1){
-		printf("We need log\n");
-	}
-	if(o_state == 1){
-		printf("We need o\n");
-	}
-	if(t_state == 1){
-		printf("We need t\n");
-	}
-
-	if(strcmp(arrray[0], "mem")!=0){
+    
+	if(strcmp(arrray[0], "mem")!=0){/*If the first argument from client is not "mem",which means normal*/
 		file_name1 = arrray[excuted_file_index];
 		argv_item = arrray[excuted_file_index+1];
-        /*crate a new fork */
+        
+		/*crate a new fork */
 		pid_t pid;
 		pid_counter++;
 		pid = fork();
@@ -469,7 +405,7 @@ void* connection_handler(int *p_thread_client_socket){
 		/* this is the child process */
 		if(pid == 0){
 			
-			
+			/*Informs User on status of log file Execution and prints on terminal*/
 			if(!log_state){
 				if(counter >= 4){
 					printf("%s - attempting to execute %s: %s\n", whattime(), arrray[excuted_file_index], arrray[excuted_file_index+1]);
@@ -482,21 +418,27 @@ void* connection_handler(int *p_thread_client_socket){
 				int saved_stdout = dup(1);
 				int file = open(arrray[log_location+1], O_WRONLY | O_CREAT | O_APPEND, 0777);				
 				if(file == -1){
-					perror("Failed");
-					//return 2;
+					perror("Failed");/*Informs User on status of log file that has failed to open log file*/
+					
 				}								
 				dup2(file, 1);
-				if(counter >= 4){
+				/*Informs User on status of log file Execution,prints on terminal and saves lines in log file*/
+				if(counter >= 4){ 
 					printf("%s - attempting to execute %s: %s\n", whattime(), arrray[excuted_file_index], arrray[excuted_file_index+1]);
 				}else{
 					printf("%s - attempting to execute %s\n", whattime(), arrray[excuted_file_index]);
 				}	
 				printf("%s - %s %s has been executed with pid %d\n", whattime(), arrray[excuted_file_index], arrray[excuted_file_index+1], getpid());
-				close(file);
+				
+				close(file);            /*Closes File*/
+				
 				//redirect to terminal
-				dup2(saved_stdout, 1);
-				close(saved_stdout);
+				
+				dup2(saved_stdout, 1);  /*Saves standard output*/
+				
+				close(saved_stdout);    /*Saves standard output and closes*/
 			}
+			
 			
 			if(o_state != 1){
 
@@ -504,27 +446,28 @@ void* connection_handler(int *p_thread_client_socket){
 
 				
 				if(value == -1){
-					//perror("execlp failed");
+					/*Informs User on status of log file Execution and prints on terminal*/
 					if(counter >= 4){
 						printf("%s - could not execute %s %s\n", whattime(), arrray[excuted_file_index], arrray[log_index+1]);	
 					}else {
 						printf("%s - could not execute %s\n", whattime(), arrray[excuted_file_index]);
 					}
-					kill(getpid(), SIGKILL);
-					//continue;
+					kill(getpid(), SIGKILL);   /*Exection unsuccessfull SIGKILL is called to terminate program*/
+					
 					
 				}
 			}
+			/*When user specifies -o option*/
 			if(o_state == 1){	
 				int saved_stdout_o = dup(1);
 				int file1 = open(arrray[o_location+1], O_WRONLY | O_CREAT | O_APPEND, 0777);
 				
 				if(file1 == -1){
 					perror("Failed");
-					//return 2;
+					
 				}		
-				//fprintf(stdout,"has been executed: %d\n", file);
-						
+				
+			    /*Write messages to file user specifies*/	
 				dup2(file1, 1);
 				
 				value = execlp(arrray[excuted_file_index], arrray[excuted_file_index+1], NULL);
@@ -545,18 +488,11 @@ void* connection_handler(int *p_thread_client_socket){
 			}
 			
 			
-			//printf("%s - %s %s has been executed with pid %d\n", buffer, arrray[excuted_file_index], arrray[excuted_file_index+1], pid);
-			/*close(value);
-			close(sockfd);*/
-			//exit(1);	
+			
 		}
 		/*parent*/
 		if(pid > 0){
-			// printf("parent pid: %d\n", pid);
-			// printf("parent getppid: %d\n", getppid());
-			// printf("parent getpid: %d\n", getpid());
-
-			//printf("here1   %d    \n", o_state);
+			
 			int status;
 
 			if(t_state){
@@ -565,51 +501,58 @@ void* connection_handler(int *p_thread_client_socket){
 			if(!t_state){
 				sleeptimes = 10;
 			}
+
+			/*User can specify waiting time a "-t" and wait*/
 			for(int i = 0; i < sleeptimes; i++){
 				
-				
-
+				/*Until child process finishes*/
 				if(waitpid(pid, &status, WNOHANG)==0){
 					
 					sleep(1);
 					get_memory_usage(pid);
 					waitflag = 1;
 					waitflag2 = 1;
-				}else
+				}else /*If a child process finished within 10 seconds, the wait flag remain 0 */
 				{
 					waitflag = 0;
 					waitflag2 = 0;
 				}
 								
 			}
+
+			/*-----Part B, D---------------------------------------------------------------*/
+			/*If a child has not beed finished within 10 minutes, the wait flag will be 1*/
 			if(waitflag){
+				/*Send sigterm after 10 seconds*/
 				if((kill(pid, SIGTERM)) == -1){
 					printf("error\n");
 				}else if((kill(pid, SIGTERM)) == 0)
 				{	
+					/*send signal*/
 					raise(SIGTERM);
+
+					/*Waits for 5 seconds if a process still alive */
 					for(int i = 0; i < 5; i++){
-						//get_memory_usage(pidc);
+						
 						if(waitpid(pid, &status, WNOHANG)==0){
 							sleep(1);
 							get_memory_usage(pid);
-							//printf("Z\n");
+							
 							waitflag2 = 1;
 						}else if(waitpid(pid, &status, WNOHANG)==-1){
-							//sleep(1);
-							//printf("Error\n");
+						
 							waitflag2 = 0;
 						}else
 						{
 							waitflag2 = 0;
-							//printf("Yeah\n");
+							
 						}	
 					}
 				}
 					
 			}
 
-			//printf("%d\n",waitflag2);
+			/*If the Sigterm does not kill a chile, this process kill the childs */
 			if(waitflag2){
 				if((kill(pid, SIGKILL))== -1){
 					printf("error\n");
@@ -623,7 +566,7 @@ void* connection_handler(int *p_thread_client_socket){
 						int file = open(arrray_log, O_WRONLY | O_CREAT | O_APPEND, 0777);				
 						if(file == -1){
 							perror("Failed");
-							//return 2;
+							
 						}								
 						dup2(file, 1);
 						printf("%s - sent SIGKILL to %d\n", whattime(), pid);
@@ -637,9 +580,10 @@ void* connection_handler(int *p_thread_client_socket){
 
 			}
 
+			/*---------------If a childs process has been executed within 10 senconds or user specified time, it will print out messages ----------*/
 			if((!waitflag)||(!waitflag2)){
 				if(!log_state){
-					//printf("status: %d\n", status);
+					
 					if(WIFEXITED(status)){
 						const int es = WEXITSTATUS(status);
 						printf("%s - %d has terminated with status code %d\n", whattime(), pid, es);		
@@ -649,6 +593,7 @@ void* connection_handler(int *p_thread_client_socket){
 						printf("%s - %d has terminated with status code %d\n", whattime(), pid, es1);
 					}								
 				}
+				/*-------If the log flag is specified, print messages to the sprcified file--------------------------*/
 				if(log_state == 1){	
 
 					int saved_stdout = dup(1);
@@ -657,10 +602,10 @@ void* connection_handler(int *p_thread_client_socket){
 				
 					if(file == -1){
 						perror("Failed");
-						//return 2;
+					
 					}			
 					dup2(file, 1);
-					//printf("%s - %s %s has been executed with pid %d\n", buffer, arrray[log_index], arrray[log_index+1], pid);
+					
 					if(WIFEXITED(status)){
 						const int es = WEXITSTATUS(status);
 						printf("%s - %d has terminated with status code %d\n", whattime(), pid, es);	
@@ -685,49 +630,51 @@ void* connection_handler(int *p_thread_client_socket){
 			}
 		
 		}
-	}else{
-		// testprint(first_head1);
-		// pthread_mutex_lock(&mutex);
+	}else{  /*---------------------- If a user uses "mem" option, this part will be executed-------------------------------------*/
+		
 		int flag;
 		
+		/*---Part E, check if there is anything in the pid linked list */
 		flag = check_contents_inside_linked_list(first_head1);
-		//printf("flag: %d\n", flag);
-		//find_latest_linked_list(first_head1);
+		
 		
 		if((arrray[1] != NULL)&&(atoi(arrray[1]))){
 			printf("segfault checker2: \n");
 			printf("arrray[1]: %s\n", arrray[1]);
-			//printAll(first_head1);
+			
 			char * send_specific_pid;
 			send_specific_pid = malloc(send_of_length_pid);
 			send_specific_pid[0] = '\0';
+
+
+			/*This function is used to print all memory history with specified pid from the linked list */
 			send_specific_pid = print_specific_pid(first_head1, arrray[1]);
 			printf("%s\n", send_specific_pid);
 			if (send(fd, send_specific_pid, (size_t)&send_of_length_pid, 0) == -1){
 				perror("send");	
 			}
 			free(send_specific_pid);
-			//close(fd);
+			
 		}else if(arrray[1] == NULL)
 		{
 			/* code */
 			if(flag == 1){
-			// 	printf("segfault checker1: \n");
-			// 	char *send_item;
-			// 	send_item = malloc(send_of_length);
-			// 	send_item[0] = '\0';
-			// 	send_item = testprint(first_head1);
+		
+				char *send_item;
+				send_item = malloc(send_of_length);
+				send_item[0] = '\0';
+				send_item = testprint(first_head1);
+					
+				/*Send the memory history back to clients*/
+				if (send(fd, send_item, (size_t)&send_of_length, 0) == -1){
+					perror("send");	
+				}	
 				
-			// 	printf("%s\n", send_item);
-			// 	if (send(fd, send_item, (size_t)&send_of_length, 0) == -1){
-			// 		perror("send");	
-			// 	}	
-			// 	// exit(0);
-			// 	free(send_item);
-			// 	close(fd);	
-			// }else{
-			// 	printf("Nothing is in linked list\n");
-			 }
+				free(send_item);
+					
+			}else{
+				printf("Nothing is in linked list\n");
+			}
 		}
 		
 		
@@ -743,117 +690,63 @@ void* connection_handler(int *p_thread_client_socket){
 	return 0;
 }
 
-struct entry* delete_first()
-{
-	/* data */
-	entry_t *temp = first_head1;
-
-	first_head1 = first_head1->next;
-	if(first_head1 == NULL){
-		current = NULL;
-	}
-
-	// free(temp);
-
-	return temp;
-	
-};
 
 
-void find_latest_linked_list(entry_t *first_head){
+// void find_latest_linked_list(entry_t *first_head){
 
-	entry_t * current_node = first_head;
+// 	entry_t * current_node = first_head;
 
-	//int this_counter = 0;
-	//int righ_counter = 0;
+// 	//int this_counter = 0;
+// 	//int righ_counter = 0;
 
-	char * current_pid = malloc(6);
-	// char * previous_pid = malloc(6);
+// 	char * current_pid = malloc(6);
+// 	// char * previous_pid = malloc(6);
 
-	//char * pid_array[THREADS_NUM];
+// 	//char * pid_array[THREADS_NUM];
 
-	while (current_node != NULL)
-	{
-		/* code */
-		// char * current_pid = malloc(6);
-		// sprintf(current_pid, "%d", current_node->entry_pid);
-        // if (strcmp(current_pid ,new_pid)) 
-        //     return 1; 
-        // current_node = current->next; 
+// 	while (current_node != NULL)
+// 	{
 
+// 		if(strcmp(whattime(), current_node->pid_elements.time)==0){
+// 			sprintf(current_pid, "%d", current_node->entry_pid);
+// 			printf("%s %ld\n", current_pid, current_node->pid_elements.bytes);
+// 		}
 
+// 		current_node = current_node->next;
+// 	}
 
-		
-		if(strcmp(whattime(), current_node->pid_elements.time)==0){
-			sprintf(current_pid, "%d", current_node->entry_pid);
-			printf("%s %ld\n", current_pid, current_node->pid_elements.bytes);
-		}
-
-		/*
-		if(this_counter > 0){
-
-			int status = 0;
-
-			for(int i =0; i < righ_counter; i++){
-				if(strcmp(current_pid , pid_array[i]) == 0){
-					status = 1;
-				}
-			}
-
-			if(status==0){
-				righ_counter++;
-				pid_array[righ_counter] = current_pid;
-			}
-
-			
-			// sprintf(current_pid, "%d", current_node->entry_pid);
-			// previous_pid = current_pid;
-			
-			this_counter++;
-		
-		}else{
-			this_counter++;
-			// previous_pid = current_pid;
-			pid_array[0] = current_pid;
-			continue;
-		}
-		*/
-		current_node = current_node->next;
-	}
-
-	/*if(righ_counter > 0){
-		for(int i = 0; i < righ_counter; i++){
-		printf("%d\n",pid_array[i]);
-	}
-	}*/
-
-	
-}
+// }
 
 
-void printAll(entry_t *first_head){
-	entry_t* current_node = first_head;
-	while(current_node != NULL){
-		printf("%s %ld %d\n", current_node->pid_elements.time, current_node->pid_elements.bytes, current_node->entry_pid);	
-		//printf("%s\n", current_node->pid_elements.file_name);
-		current_node = current_node->next;
-	}
-}
+// void printAll(entry_t *first_head){
+// 	entry_t* current_node = first_head;
+// 	while(current_node != NULL){
+// 		printf("%s %ld %d\n", current_node->pid_elements.time, current_node->pid_elements.bytes, current_node->entry_pid);	
+// 		//printf("%s\n", current_node->pid_elements.file_name);
+// 		current_node = current_node->next;
+// 	}
+// }
 
-
+/*----------------------Part E-------------------------------------------------------------*/
+/*Print specified pid memory history*/
 char * print_specific_pid(entry_t *first_head, char * new_pid){
 	//printf("TEst");
+
+	/*Get head for linked list*/
 	entry_t* current_node = first_head;
 	char * send_values = "";
 	int size_of_length = 0;
 	char * mypid = malloc(6);
 	char bytes_send[256] = "";
+
+	/*Check if pid linked list is empty or not*/
 	if(current_node==NULL){
 		printf("  Empty \n");
 		// free(mypid);
 		return NULL;
 	}else
 	{
+		/*try to concatenate each pid value and return send values */
 		while(current_node != NULL){
 			sprintf(mypid, "%d", current_node->entry_pid);
 			if(strcmp(mypid, new_pid) == 0){
@@ -883,31 +776,7 @@ char * print_specific_pid(entry_t *first_head, char * new_pid){
 	}
 }
 
-
-// void get_latest_pid(entry_t *first_head, entry_t *new_pid){
-// 	entry_t* current_node = first_head;
-// 	while(current_node != NULL){
-
-// 		//for(int i =0; i < pid_counter; i++){
-			
-// 		//}
-
-
-
-// 		if(current_node->entry_pid == new_pid){
-
-// 		}
-
-// 		printf("%s %ld %d\n", current_node->pid_elements.time, current_node->pid_elements.bytes, current_node->entry_pid);	
-// 		//printf("%s\n", current_node->pid_elements.file_name);
-// 		current_node = current_node->next;
-// 	}
-// }
-// void print_latest_pid(entry_t *latest_pid){
-	
-// }
-
-
+/*Check if there is any memory history in the pid linked list*/
 int check_contents_inside_linked_list(entry_t* first_head) 
 { 
     entry_t* current = first_head;  // Initialize current 
@@ -919,27 +788,11 @@ int check_contents_inside_linked_list(entry_t* first_head)
    
 }
 
-int check_contents_inside_linked_list2(entry_t* first_head, pid_t pid_v) 
-{ 
-    entry_t* current = first_head;  // Initialize current 
-	if(current == NULL){
-		return 0;
-	}
-    while (current != NULL) 
-    { 
-        if (current->entry_pid == pid_v) 
-            return 1; 
-        current = current->next; 
-    } 
-    return 0; 
-}
 
-
-
+/*--------------------------------- part E--------------------------------*/
+/*Get latest pid memory history from the the pid linked list*/
 
 char * testprint(entry_t* head){
-	//printf("counter: %d\n", pid_counter);
-	// pthread_mutex_lock(&mutex);
 	entry_t *current_node = head;
 	char * send_value = "";
 	int size_of_length = 0;
@@ -951,78 +804,57 @@ char * testprint(entry_t* head){
 		printf("  Empty \n");
 		return NULL;
 	}else{
-		//printf("num: %d\n",num);
-		// printf("here %s\n", current_node->pid_elements.file_name);
-		
+
+		/*Convert the value of the pid on the linked list to char to print out*/
 		while (current_node != NULL){
-			
 			if(strcmp(current_node->pid_elements.time, this_time)==0){
 				sprintf(mypid, "%d", current_node->entry_pid);
 				snprintf(bytes_send, sizeof(bytes_send), "%ld", current_node->pid_elements.bytes);
-				//if(strcmp(mypid, new_pid)!=0){
-				//new_pid = mypid;
-				//printf("test: %d %ld\n", current_node->entry_pid, current_node->pid_elements.bytes);
+
 				size_of_length += (strlen(mypid));
 				size_of_length +=(strlen(bytes_send));
-				//size_of_length +=(strlen(current_node->pid_elements.file_name));
+				
 				size_of_length ++;
-				/*
-				if(current_node->pid_elements.arguments != NULL){
-					size_of_length+=strlen(current_node->pid_elements.arguments);
-					size_of_length ++;
-				}*/
+
 				send_value = malloc(size_of_length);
 				send_value[0] = '\0';
 				send_of_length = size_of_length;
 				strcat(send_value, mypid);
 				strcat(send_value, " ");
 				strcat(send_value, bytes_send);
-				//strcat(send_value, " ");
-				//strcat(send_value, (current_node->pid_elements.file_name));
-				/*
-				if((current_node->pid_elements.arguments) != NULL){
-					strcat(send_value, " ");
-					strcat(send_value, (char *)(current_node->pid_elements.arguments));
-				}
-				*/
-				//}
-				//printf("%s %s\n", mypid, bytes_send);
+
 				
 			}
 			current_node = current_node->next;
+
+			/*waits micro seconds*/
 			usleep(10);
 		}
-		//printf("%s\n", send_value);
-	free(mypid);
+		
+		free(mypid);
 
-	return send_value;
+		return send_value;
 	}
 	
-   	//while ( current_node != NULL) {
-    //printf("pid: %d  bytes: %ld\n", current_node->entry_pid, current_node->pid_elements.bytes);
-        //current_node = current_node->next;
-    //}
-	// pthread_mutex_unlock(&mutex);
 }
 
 
-
-
+/*Kill comand and print out appropriate messages to stdout*/
 void kill_child(int signum){
 	if(!log_state){
-		printf("%s - sent SIGTERM to %d\n", whattime(), pidc);
-		//printf("%s - %d has terminated with status code 0\n", whattime(), pidc);
+
+		printf("%s - sent SIGTERM to %d\n", whattime(), pidc);    /*Message is printed in the terminal after the children are terminated*/
+		
 	}
 	if(log_state){
 		int saved_stdout = dup(1);
 		int file = open(arrray_log, O_WRONLY | O_CREAT | O_APPEND, 0777);				
 		if(file == -1){
 			perror("Failed");
-			//return 2;
 		}								
 		dup2(file, 1);
-		printf("%s - sent SIGTERM to %d\n", whattime(), pidc);
-		//printf("%s - %d has terminated with status code 0\n", whattime(), pidc);
+		printf("%s - sent SIGTERM to %d\n", whattime(), pidc);   /*Message is printed in the terminal after the children are terminated and saved in log file */
+		
 		close(file);
 		//redirect to terminal
 		dup2(saved_stdout, 1);
@@ -1031,11 +863,11 @@ void kill_child(int signum){
 	
 }
 
-
+/*Terminates program completely when Ctrl-C is input by the user*/
 void Kill_All(int sig) {
 	if(!log_state){
 		printf("\n%s - recieved SIGINT\n", whattime());
-		printf("%s - Cleaning up and terminating...\n", whattime());
+		printf("%s - Cleaning up and terminating...\n", whattime());   /*As soon as Ctrl-C is Input this Message is printed in the terminal */
 	}
 	if(log_state){
 		int saved_stdout = dup(1);
@@ -1045,20 +877,21 @@ void Kill_All(int sig) {
 			//return 2;
 		}								
 		dup2(file, 1);
-		printf("\n%s - recieved SIGINT\n", whattime());
+		printf("\n%s - recieved SIGINT\n", whattime());    /*As soon as Ctrl-C is Input this Message is printed in the terminal and saved in log file */
 		printf("%s - Cleaning up and terminating...\n", whattime());
 		close(file);
+
 		//redirect to terminal
 		dup2(saved_stdout, 1);
 		close(saved_stdout);
 	}
 	
+	/* Clears Dynamic Memmory after SIGINT is signaled*/
 	for (int i = 0; i < THREADS_NUM; i++) {
-		pthread_cancel(thread_pool[i]);
-		pthread_kill(thread_pool[i], SIGKILL);
-		pthread_join(thread_pool[i], NULL);
+		pthread_cancel(thread_pool[i]);          /*Sends Cancellation request to thread*/
+		pthread_kill(thread_pool[i], SIGKILL);   /*Terminates process*/
+		pthread_join(thread_pool[i], NULL);      /*JOin each thread to free all memory*/
 	}
 
 	exit(1);
-	// return 0;
 }

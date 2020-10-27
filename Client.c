@@ -12,12 +12,13 @@
 
 #define MAXDATASIZE 255 /* max number of bytes we can get at once */
 
+/*Error Message showing the proper notation for client input */
 static void show_error(){
 		fprintf(stderr, "usage: controller <address> <port> {[- out_file] [-log log_file] [-t seconds] <file> [arg...] | mem [pid] | memkill <percent>}\n");
 		exit(1);
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char *argv[]) 
 {
     int sockfd;
     int numbytes;
@@ -25,53 +26,39 @@ int main(int argc, char *argv[])
     struct hostent *he;
     struct sockaddr_in their_addr; 
 
-    if (argc < 3)
+    if (argc < 3)  /*Screens Each Argument and prints a usage error depending on the input of user */
     {
-        //fprintf(stderr, "usage: <hostname> <port number>\n");
-        //exit(1);
-        show_error();
+        show_error(); 
         exit(1);
     }
 
-    if(argv[3] == NULL){
+    if(argv[3] == NULL){ /*Error output when nothing is written in the third argument */
         show_error();
         exit(1);
     }
     
-	if (strcmp(argv[1], "--help") == 0){
+	if (strcmp(argv[1], "--help") == 0){ /*Error output when --help is written in the first argument */
 		show_error();
 	}
 
-    if(argv[2] == NULL){
+    if(argv[2] == NULL){ /*Error output when nothing is written in the second argument */
         show_error();
         exit(1);
     }
 	
     int port = atoi(argv[2]);
-    //int flag = 0;
-
 
     if ((he = gethostbyname(argv[1])) == NULL)
     { /* get the host info */
         show_error();
-        //fprintf(stderr, "Could not connect with port %d\n", port);
         perror("wrong");
         exit(1);
     }
 
     if(strcmp(argv[1], "localhost") < 0){
-        fprintf(stderr, "Could not connect with port %d\n", port);
+        fprintf(stderr, "Could not connect to overseer %s at %d\n", argv[1],port);
         exit(1);
     }
-
-    //if(isalpha(argv[2])){
-        //show_error();
-        //exit(1);
-    //}
-    //if((strcmp(argv[5], "-o")==0)||(strcmp(argv[7], "-o")==0)||(strcmp(argv[7], "-log")==0)){
-        //show_error();
-        //exit(1);
-    //}
     
 
 	/* generate the socket */
@@ -86,8 +73,8 @@ int main(int argc, char *argv[])
     memset(&their_addr, 0, sizeof(their_addr));
 
     their_addr.sin_family = AF_INET;   /* host byte order */
-    their_addr.sin_port = htons(port); /* short, network byte order */
-    their_addr.sin_addr = *((struct in_addr *)he->h_addr);
+    their_addr.sin_port = htons(port); /* sort, network byte order */
+    their_addr.sin_addr = *((struct in_addr *)he->h_addr); /* sort, address byte order */
 
     if (connect(sockfd, (struct sockaddr *)&their_addr,
                 sizeof(struct sockaddr)) == -1)
@@ -96,13 +83,9 @@ int main(int argc, char *argv[])
         fprintf(stderr, "Could not connect with port %d\n", port);
         exit(1);
     }
-
-
-    
+   
 	char * send_value = "";
-	//int * sending_size = 0;
-
-    
+ 
     int size_of_length = 0;
 		
 	for(int i=3; i< argc; i++){
@@ -112,13 +95,9 @@ int main(int argc, char *argv[])
 				size_of_length++;
 			}
 	}
-		
-		//printf("%d\n",size_of_length);
-		
+			
 		send_value = malloc(size_of_length);
 		send_value[0] = '\0';
-		//sending_size = malloc(size_of_length);
-		//sending_size = '\0';
 		
 		for(int i = 3; i < argc; i++){
 
@@ -127,8 +106,7 @@ int main(int argc, char *argv[])
 			{
 				strcat(send_value, " ");
 			}
-						
-			
+								
 		}
 			
 		if (send(sockfd, send_value , (size_t)&size_of_length, 0) == -1){
@@ -142,27 +120,16 @@ int main(int argc, char *argv[])
                 if ((numbytes = recv(sockfd, buf, MAXDATASIZE, 0)) == -1)
                 {
                     perror("recv_in_here");
-                    // exit(1);
-                    //break;
+                    
                 }else
                 {
                     buf[numbytes] = '\0';
-
-                    //while(buf != NULL){
-                        printf("%s\n", buf);
-                    //}
-                    
-
-                }
-                
-            
+       
+                        printf("%s\n", buf);                              
+                }                       
         }
 
-
-
-
-
     free(send_value);
-//arguments.split(" ");
+
     return 0;
 }
