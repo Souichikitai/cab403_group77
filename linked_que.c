@@ -2,16 +2,16 @@
 #include "linked_que.h"
 #include <stdio.h>
 
-
 node_t* head = NULL;
 node_t* tail = NULL; 
 
 int counter =0;
 
 
-void append_que(int *csocket){
+/*Appending a node to linked list*/
+void append_que(int *c_socket){
     node_t * node_new = malloc(sizeof(node_t));
-    node_new->csocket = csocket;
+    node_new->c_socket = c_socket;
     node_new->next = NULL;
     if(tail == NULL){
         head = node_new;
@@ -20,14 +20,14 @@ void append_que(int *csocket){
     }
     tail = node_new;
     counter++;
-    // printf("         %d            \n", counter);
 }
 
+/*Deleting a node from the linked list*/
 int* remove_que(){
     if(head == NULL){
         return NULL;
     } else {
-        int *result = head->csocket;
+        int *result = head->c_socket;
         node_t *temp=head;
         head = head->next;
         if(head == NULL){
@@ -37,6 +37,4 @@ int* remove_que(){
 
         return result;
     }
-
-    // printf("         %d            \n", counter);
 }

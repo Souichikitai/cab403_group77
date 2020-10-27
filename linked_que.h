@@ -3,12 +3,12 @@
 
 struct node{
     struct node *next;
-    int *csocket;
+    int *c_socket;
 };
 
 typedef struct node node_t;
 
-void append_que(int *csocket);
+void append_que(int *c_socket);
 int* remove_que();
 
 #endif

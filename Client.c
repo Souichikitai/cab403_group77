@@ -69,6 +69,16 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
+    for(int i = 0; i<argc;i++){
+        if((strcmp(argv[i], "-t") == 0)){
+            if((atoi(argv[i+1]) == 0)){
+                show_error();
+                exit(1);
+            }
+            
+        }
+    }
+
     /* clear address struct */
     memset(&their_addr, 0, sizeof(their_addr));
 

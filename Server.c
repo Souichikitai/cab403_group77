@@ -13,21 +13,21 @@
 #include <pthread.h>
 #include <signal.h>
 #include "linked_que.h"
-//#include <ctype.h>
-//#include <linux/module.h>
+
 
 #define BACKLOG 10 /* how many pending connections queue will hold */
 #define MAXDATASIZE 256 /* max number of bytes we can get at once */
 #define THREADS_NUM 5 /* max number of threads we can get at once */
 
-// pthread_t *thread_pool;
 pthread_t thread_pool[THREADS_NUM]; /* Linked list Entry */
-//pid_t entry_pid[THREADS_NUM];
 
 
+/* ----------------- Initialize mutex lock ---------------------*/
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex_new = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
+
+
 
 int sockfd, new_fd, servnumbyte;/* listen on sock_fd, new connection on new_fd */
 int send_fd;                    /*file descriptor-store all data from server to client */ 
@@ -39,14 +39,16 @@ socklen_t sin_size;             /* Used to get connection from client */
 typedef struct entry entry_t;   /* Linked list Entry */
 typedef struct pid_entry_value pentry_t; /* Linked list PID value */
 
-/* Each PID value such as file name,agruments and time*/
+
+
+/* ------------------Each PID value such as file name,agruments and time ---------------------*/
 struct pid_entry_value {
     unsigned long bytes;
     char* file_name;
     char* arguments;
 	char* time;
 };
-/* THis link list has individual process ID,that is genrated by the folk */
+/* ----------This link list has individual process ID,that is genrated by the folk -------------- */
 struct entry {
     pid_t entry_pid;
 	pentry_t pid_elements;
@@ -57,9 +59,9 @@ entry_t * first_head1 = NULL;
 entry_t *current = NULL;
 
 
-char buf[MAXDATASIZE];/*This buffer array stores all arguments sent from client*/
+char buf[MAXDATASIZE]; /*This buffer array stores all arguments sent from client*/
 
-/* Declaring all functions used below */
+/* ---------------------Declaring all functions used below ---------------------*/
 void* connection_handler(int *client_socket);
 char * whattime();
 void *thread_controller(void *arg);
@@ -68,16 +70,16 @@ void Kill_All(int sig);
 void get_memory_usage(pid_t pid_value);
 char * testprint(entry_t* head);
 int check_contents_inside_linked_list(entry_t* first_head);
-// int check_contents_inside_linked_list2(entry_t* first_head, pid_t pid_v);
 void printAll(entry_t *first_head);
 char * print_specific_pid(entry_t *first_head, char * new_pid);
-// void find_latest_linked_list(entry_t *first_head);
+
 
 
 
 int pid_counter = 0; /*Counts the number of PID*/
 
-/*This function is used to insert new PID to global link list for part E*/
+/*---------------------This function is used to insert new PID to global link list for part E--------------------------------------*/
+
 entry_t* insert_entry(entry_t* first_head, pid_t _pid_, unsigned long _bytes_, char* _time_, char* _file_name, char* _arguments_){
 
 	entry_t *link = (entry_t*) malloc(sizeof(entry_t));
@@ -100,7 +102,7 @@ entry_t* insert_entry(entry_t* first_head, pid_t _pid_, unsigned long _bytes_, c
 	
 }
 
-/* These variables are used as flag to keep track of what is inside of each request from client*/
+/* ---------------------These variables are used as flag to keep track of what is inside of each request from client ---------------------*/
 int sleeptimes;
 int waitflag;
 int waitflag2;
@@ -127,11 +129,9 @@ int t_location;
 pid_t pidc;
 
 
-
 int main(int argc, char *argv[])
 {
 	
-    
     /* generate the socket */
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
     {
@@ -222,7 +222,7 @@ int main(int argc, char *argv[])
     close(sockfd);
     return 0;
 }
-/*Get curren time*/
+/* ---------------------Get curren time---------------------*/
 char * whattime(){
     
     static char buffer[26];
@@ -237,7 +237,7 @@ char * whattime(){
 	return buffer;
 }
 
-/*Thread controller is used for thread pool required in part c and uses mutex unlock*/
+/*---------------------Thread controller is used for thread pool required in part c and uses mutex unlock---------------------*/
 void *thread_controller(void *arg){
 	while(1){
 		
@@ -253,7 +253,7 @@ void *thread_controller(void *arg){
 	}
 }
 
-/* This funtion is used to get the memory usage from proc/maps file*/
+/* ---------------------This funtion is used to get the memory usage from proc/maps file---------------------*/
 void get_memory_usage(pid_t pid_value){
 
     char buff[512];
@@ -261,7 +261,6 @@ void get_memory_usage(pid_t pid_value){
     sprintf(buff, "/proc/%d/maps", pid_value);
 	f = fopen(buff, "r");
     if(f == NULL){
-		printf("No pid\n");
 		
 	}else{
 		
@@ -320,7 +319,7 @@ void get_memory_usage(pid_t pid_value){
 
 }
 
-/*Handles the connection request between controller and overseer*/
+/*-----------------Handles the connection request between controller and overseer---------------------------------*/
 void* connection_handler(int *p_thread_client_socket){
 	int fd = *p_thread_client_socket; 
         
@@ -616,6 +615,7 @@ void* connection_handler(int *p_thread_client_socket){
 					}
 					log_state = 0;
 					close(file);
+
 					//redirect to terminal
 					dup2(saved_stdout, 1);
 					close(saved_stdout);	
@@ -676,12 +676,6 @@ void* connection_handler(int *p_thread_client_socket){
 				printf("Nothing is in linked list\n");
 			}
 		}
-		
-		
-
-		
-		
-        // pthread_mutex_unlock(&mutex);
 	}
 	close(fd); 
 	close(new_fd);
@@ -691,46 +685,9 @@ void* connection_handler(int *p_thread_client_socket){
 }
 
 
-
-// void find_latest_linked_list(entry_t *first_head){
-
-// 	entry_t * current_node = first_head;
-
-// 	//int this_counter = 0;
-// 	//int righ_counter = 0;
-
-// 	char * current_pid = malloc(6);
-// 	// char * previous_pid = malloc(6);
-
-// 	//char * pid_array[THREADS_NUM];
-
-// 	while (current_node != NULL)
-// 	{
-
-// 		if(strcmp(whattime(), current_node->pid_elements.time)==0){
-// 			sprintf(current_pid, "%d", current_node->entry_pid);
-// 			printf("%s %ld\n", current_pid, current_node->pid_elements.bytes);
-// 		}
-
-// 		current_node = current_node->next;
-// 	}
-
-// }
-
-
-// void printAll(entry_t *first_head){
-// 	entry_t* current_node = first_head;
-// 	while(current_node != NULL){
-// 		printf("%s %ld %d\n", current_node->pid_elements.time, current_node->pid_elements.bytes, current_node->entry_pid);	
-// 		//printf("%s\n", current_node->pid_elements.file_name);
-// 		current_node = current_node->next;
-// 	}
-// }
-
 /*----------------------Part E-------------------------------------------------------------*/
 /*Print specified pid memory history*/
 char * print_specific_pid(entry_t *first_head, char * new_pid){
-	//printf("TEst");
 
 	/*Get head for linked list*/
 	entry_t* current_node = first_head;
@@ -742,7 +699,7 @@ char * print_specific_pid(entry_t *first_head, char * new_pid){
 	/*Check if pid linked list is empty or not*/
 	if(current_node==NULL){
 		printf("  Empty \n");
-		// free(mypid);
+		
 		return NULL;
 	}else
 	{
@@ -766,9 +723,9 @@ char * print_specific_pid(entry_t *first_head, char * new_pid){
 				strcat(send_values, " ");
 				strcat(send_values, mypid);
 			}		
-			//printf("%s\n", current_node->pid_elements.file_name);
+			
 			current_node = current_node->next;
-			//free(mypid);
+		
 			usleep(10);
 		}
 		free(mypid);
@@ -776,7 +733,7 @@ char * print_specific_pid(entry_t *first_head, char * new_pid){
 	}
 }
 
-/*Check if there is any memory history in the pid linked list*/
+/*---------------------Check if there is any memory history in the pid linked list---------------------*/
 int check_contents_inside_linked_list(entry_t* first_head) 
 { 
     entry_t* current = first_head;  // Initialize current 
@@ -839,7 +796,7 @@ char * testprint(entry_t* head){
 }
 
 
-/*Kill comand and print out appropriate messages to stdout*/
+/*---------------------Kill comand and print out appropriate messages to stdout ---------------------*/
 void kill_child(int signum){
 	if(!log_state){
 
@@ -863,7 +820,7 @@ void kill_child(int signum){
 	
 }
 
-/*Terminates program completely when Ctrl-C is input by the user*/
+/*---------------------Terminates program completely when Ctrl-C is input by the user---------------------*/
 void Kill_All(int sig) {
 	if(!log_state){
 		printf("\n%s - recieved SIGINT\n", whattime());
@@ -874,7 +831,7 @@ void Kill_All(int sig) {
 		int file = open(arrray_log, O_WRONLY | O_CREAT | O_APPEND, 0777);				
 		if(file == -1){
 			perror("Failed");
-			//return 2;
+			
 		}								
 		dup2(file, 1);
 		printf("\n%s - recieved SIGINT\n", whattime());    /*As soon as Ctrl-C is Input this Message is printed in the terminal and saved in log file */
