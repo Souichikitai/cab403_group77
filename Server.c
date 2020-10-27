@@ -13,6 +13,7 @@
 #include <pthread.h>
 #include <signal.h>
 #include "linked_que.h"
+//#include <ctype.h>
 //#include <linux/module.h>
 
 #define BACKLOG 10 /* how many pending connections queue will hold */
@@ -21,7 +22,7 @@
 
 // pthread_t *thread_pool;
 pthread_t thread_pool[THREADS_NUM];
-pid_t entry_pid[THREADS_NUM];
+//pid_t entry_pid[THREADS_NUM];
 
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -30,8 +31,8 @@ pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 
 int sockfd, new_fd, servnumbyte;            /* listen on sock_fd, new connection on new_fd */
 int send_fd;
-int send_of_length;
-int send_of_length_pid;
+int send_of_length = 0;
+int send_of_length_pid = 0;
 struct sockaddr_in my_addr;    /* my address information */
 struct sockaddr_in their_addr; /* connector's address information */
 socklen_t sin_size;
@@ -690,34 +691,43 @@ void* connection_handler(int *p_thread_client_socket){
 		int flag;
 		
 		flag = check_contents_inside_linked_list(first_head1);
+		//printf("flag: %d\n", flag);
 		//find_latest_linked_list(first_head1);
 		
-		if(arrray[1] != NULL){
+		if((arrray[1] != NULL)&&(atoi(arrray[1]))){
+			printf("segfault checker2: \n");
+			printf("arrray[1]: %s\n", arrray[1]);
 			//printAll(first_head1);
 			char * send_specific_pid;
+			send_specific_pid = malloc(send_of_length_pid);
+			send_specific_pid[0] = '\0';
 			send_specific_pid = print_specific_pid(first_head1, arrray[1]);
 			printf("%s\n", send_specific_pid);
 			if (send(fd, send_specific_pid, (size_t)&send_of_length_pid, 0) == -1){
 				perror("send");	
 			}
-		}else
+			free(send_specific_pid);
+			//close(fd);
+		}else if(arrray[1] == NULL)
 		{
 			/* code */
 			if(flag == 1){
+			// 	printf("segfault checker1: \n");
+			// 	char *send_item;
+			// 	send_item = malloc(send_of_length);
+			// 	send_item[0] = '\0';
+			// 	send_item = testprint(first_head1);
 				
-				char *send_item;
-				send_item = testprint(first_head1);
-				
-				printf("%s\n", send_item);
-				if (send(fd, send_item, (size_t)&send_of_length, 0) == -1){
-					perror("send");	
-				}	
-				// exit(0);
-				
-				close(fd);	
-			}else{
-				printf("Nothing is in linked list\n");
-			}
+			// 	printf("%s\n", send_item);
+			// 	if (send(fd, send_item, (size_t)&send_of_length, 0) == -1){
+			// 		perror("send");	
+			// 	}	
+			// 	// exit(0);
+			// 	free(send_item);
+			// 	close(fd);	
+			// }else{
+			// 	printf("Nothing is in linked list\n");
+			 }
 		}
 		
 		
@@ -838,30 +848,39 @@ char * print_specific_pid(entry_t *first_head, char * new_pid){
 	int size_of_length = 0;
 	char * mypid = malloc(6);
 	char bytes_send[256] = "";
-	while(current_node != NULL){
-		
-		sprintf(mypid, "%d", current_node->entry_pid);
-		snprintf(bytes_send, sizeof(bytes_send), "%ld", current_node->pid_elements.bytes);
-		if(strcmp(mypid, new_pid) == 0){
-			printf("%s %ld %d\n", current_node->pid_elements.time, current_node->pid_elements.bytes, current_node->entry_pid);
-			size_of_length+=strlen(current_node->pid_elements.time);
-			size_of_length++;
-			size_of_length+=strlen(bytes_send);
-			size_of_length++;
-			size_of_length+=strlen(mypid);
-			send_of_length_pid = size_of_length;
-			send_values = malloc(size_of_length);
-			send_values[0] = '\0';
-			strcat(send_values, current_node->pid_elements.time);
-			strcat(send_values, " ");
-			strcat(send_values, bytes_send);
-			strcat(send_values, " ");
-			strcat(send_values, mypid);
-		}		
-		//printf("%s\n", current_node->pid_elements.file_name);
-		current_node = current_node->next;
+	if(current_node==NULL){
+		printf("  Empty \n");
+		// free(mypid);
+		return NULL;
+	}else
+	{
+		while(current_node != NULL){
+			sprintf(mypid, "%d", current_node->entry_pid);
+			if(strcmp(mypid, new_pid) == 0){
+				snprintf(bytes_send, sizeof(bytes_send), "%ld", current_node->pid_elements.bytes);
+				printf("%s %ld %d\n", current_node->pid_elements.time, current_node->pid_elements.bytes, current_node->entry_pid);
+				size_of_length+=strlen(current_node->pid_elements.time);
+				size_of_length++;
+				size_of_length+=strlen(bytes_send);
+				size_of_length++;
+				size_of_length+=strlen(mypid);
+				send_of_length_pid = size_of_length;
+				send_values = malloc(size_of_length);
+				send_values[0] = '\0';
+				strcat(send_values, current_node->pid_elements.time);
+				strcat(send_values, " ");
+				strcat(send_values, bytes_send);
+				strcat(send_values, " ");
+				strcat(send_values, mypid);
+			}		
+			//printf("%s\n", current_node->pid_elements.file_name);
+			current_node = current_node->next;
+			//free(mypid);
+			usleep(10);
+		}
+		free(mypid);
+		return send_values;
 	}
-	return send_values;
 }
 
 
@@ -942,7 +961,7 @@ char * testprint(entry_t* head){
 				snprintf(bytes_send, sizeof(bytes_send), "%ld", current_node->pid_elements.bytes);
 				//if(strcmp(mypid, new_pid)!=0){
 				//new_pid = mypid;
-				///printf("test: %d %ld\n", current_node->entry_pid, current_node->pid_elements.bytes);
+				//printf("test: %d %ld\n", current_node->entry_pid, current_node->pid_elements.bytes);
 				size_of_length += (strlen(mypid));
 				size_of_length +=(strlen(bytes_send));
 				//size_of_length +=(strlen(current_node->pid_elements.file_name));
@@ -971,6 +990,7 @@ char * testprint(entry_t* head){
 				
 			}
 			current_node = current_node->next;
+			usleep(10);
 		}
 		//printf("%s\n", send_value);
 	free(mypid);

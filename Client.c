@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
 {
     int sockfd;
     int numbytes;
-    char buf[MAXDATASIZE];
+    char buf[1026];
     struct hostent *he;
     struct sockaddr_in their_addr; 
 
@@ -147,8 +147,12 @@ int main(int argc, char *argv[])
                 }else
                 {
                     buf[numbytes] = '\0';
+
+                    //while(buf != NULL){
+                        printf("%s\n", buf);
+                    //}
                     
-                    printf("%s\n", buf);
+
                 }
                 
             
