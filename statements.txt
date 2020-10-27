@@ -1,0 +1,40 @@
+-------- Statement of Completenesss --------
+
+Fill the below for each section with C for complete and P for partially complete.
+For example: A[C]
+
+A [ C]
+B [ C]
+C [ C]
+D [ C]
+E [ P] 
+
+Comments:
+In regards to part E, except memkill, we almost done.
+However, for printing out to client stdout still not working.
+--------------------------------------------
+
+
+-------- Statement of Contribution --------
+
+Ignore this if in a group of 1.
+
+Fill the below with your student IDs, names, and contribution description.
+
+ID: n10140981
+name: Sohichi Kitai 
+contribution: 33% [abcde]
+
+ID: n9647465
+name: Ching Yin Chen 
+contribution: 33% [abcde]
+
+ID: n10236708
+name:Nigel Togel Rabia 
+contribution: 33% [abcde]
+
+Comments:
+all good.
+--------------------------------------------
+
+
