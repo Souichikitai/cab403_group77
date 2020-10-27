@@ -12,6 +12,15 @@
 
 #define MAXDATASIZE 255 /* max number of bytes we can get at once */
 
+/*
+    -------Group 77-------
+    Chig Yin Chen n9647465
+    Sohichi Kitai n10140981
+    Nigel Rabia n10236708
+
+*/
+
+
 /*Error Message showing the proper notation for client input */
 static void show_error(){
 		fprintf(stderr, "usage: controller <address> <port> {[- out_file] [-log log_file] [-t seconds] <file> [arg...] | mem [pid] | memkill <percent>}\n");
@@ -46,7 +55,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
 	
-    int port = atoi(argv[2]);
+    int port = atoi(argv[2]);/*Error output when nothing is written in the second argument */
 
     if ((he = gethostbyname(argv[1])) == NULL)
     { /* get the host info */
@@ -55,7 +64,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    if(strcmp(argv[1], "localhost") < 0){
+    if(strcmp(argv[1], "localhost") < 0){ /*Error output when nothing is written in the first argument */
         fprintf(stderr, "Could not connect to overseer %s at %d\n", argv[1],port);
         exit(1);
     }
@@ -69,7 +78,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    for(int i = 0; i<argc;i++){
+    for(int i = 0; i<argc;i++){ /*Error output when "-t" is input incorrectly */
         if((strcmp(argv[i], "-t") == 0)){
             if((atoi(argv[i+1]) == 0)){
                 show_error();

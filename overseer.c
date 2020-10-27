@@ -19,6 +19,14 @@
 #define MAXDATASIZE 256 /* max number of bytes we can get at once */
 #define THREADS_NUM 5 /* max number of threads we can get at once */
 
+/*
+    -------Group 77-------
+    Chig Yin Chen n9647465
+    Sohichi Kitai n10140981
+    Nigel Rabia n10236708
+
+*/
+
 pthread_t thread_pool[THREADS_NUM]; /* Linked list Entry */
 
 
